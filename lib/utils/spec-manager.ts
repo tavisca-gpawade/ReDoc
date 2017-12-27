@@ -21,6 +21,7 @@ export interface DescendantInfo {
   name: string;
   active?: boolean;
   idx?: number;
+  shortName? : string
 }
 
 @Injectable()
@@ -202,7 +203,8 @@ export class SpecManager {
       if (prop && prop.enum && prop.enum.indexOf(JsonPointer.baseName(defPointer)) > -1) {
         res.push({
           name: JsonPointer.baseName(defPointer),
-          $ref: defPointer
+          $ref: defPointer,
+          shortName : JsonPointer.baseName(defPointer)
         });
       }
     }
@@ -258,7 +260,7 @@ export class SpecManager {
         derivedName = defName;
       }
 
-      res.push({name: derivedName, $ref: `#/definitions/${defName}`});
+      res.push({name: derivedName, shortName: def.title || derivedName,  $ref: `#/definitions/${defName}`});
     }
     return res;
   }

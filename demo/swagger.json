@@ -1,0 +1,4192 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "version": "v1",
+      "title": "NxtApi",
+      "description": "",
+      "x-logo": {
+        "url": "http://demo.travelnxt.com/Documentation/img/Logo.png",
+        "backgroundColor": "#1469a3"
+      }
+    },
+    "host": "localhost:64339",
+    "schemes": [
+      "http"
+    ],
+    "paths": {
+    
+      "/api/trip/price": {
+        "post": {
+          "tags": [
+            "Trip"
+          ],
+          "summary": "Price",
+          "description": "The Price API allows you to retrieve the latest rates and content attributes along with all the rules, policies, and restrictions around the usage of that specific rate. The API response also includes a breakdown of all charges, including the base rate, taxes, discounts, fees, and the estimated total cost.\r\n#### Endpoint\r\n<code>POST {tripApiHostUrl}/api/trip/price</code>\r\n\r\n **Note -**  This api return the unique **productId** against trip product in response. This id use in booking api as a \"**priceProductId**\".",
+          "operationId": "Trip_Price",
+          "consumes": [
+            "application/json",
+            "text/json",
+            "application/xml",
+            "text/xml",
+            "application/x-www-form-urlencoded"
+          ],
+          "produces": [
+            "application/json",
+            "text/json",
+            "application/xml",
+            "text/xml"
+          ],
+          "parameters": [
+            {
+              "name": "request",
+              "in": "body",
+              "description": "Price Request",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/PriceRequest"
+              }
+            },
+            {
+              "name": "api-token",
+              "in": "header",
+              "description": "API authentication token",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "correlation-id",
+              "in": "header",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "client-id",
+              "in": "header",
+              "description": "Client identifier",
+              "required": true,
+              "type": "integer"
+            },
+            {
+              "name": "pos-id",
+              "in": "header",
+              "description": "Point of sale id",
+              "required": true,
+              "type": "integer"
+            },
+            {
+              "name": "currency",
+              "in": "query",
+              "description": "Currency code. Default : USD",
+              "required": false,
+              "type": "string"
+            },
+            {
+              "name": "culture",
+              "in": "query",
+              "description": "Language culture. Default : en-us",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "OK",
+              "schema": {
+                "$ref": "#/definitions/PriceResponse"
+              }
+            }
+          }
+        }
+      }
+  
+    },
+    "definitions": {
+      "ActivitySearchRequest": {
+        "description": "Contains information about the activity search criteria.",
+        "type": "object",
+        "properties": {
+          "location": {
+            "$ref": "#/definitions/Location",
+            "description": "Contains information about the activity location."
+          },
+          "fromDate": {
+            "description": "Contains information about the date and time from when the activity is to be searched.",
+            "type": "string"
+          },
+          "toDate": {
+            "description": "Contains information about the date and time until when the activity is to be searched.",
+            "type": "string"
+          },
+          "searchId": {
+            "description": "Unique id for this search.",
+            "type": "string"
+          },
+          "userType": {
+            "description": "User type is mainly used for markup calculation.",
+            "type": "string"
+          },
+          "userCountryCode": {
+            "description": "User country code can be used in markups and fee calculation.",
+            "type": "string"
+          },
+          "paginationInfo": {
+            "$ref": "#/definitions/Paging",
+            "description": "Pagination information."
+          }
+        }
+      },
+      "Location": {
+        "description": "Location Details",
+        "type": "object",
+        "properties": {
+          "geoCode": {
+            "$ref": "#/definitions/GeoCode"
+          },
+          "type": {
+            "description": "Location Type",
+            "enum": [
+              "Airport",
+              "City",
+              "Address"
+            ],
+            "type": "string"
+          },
+          "name": {
+            "description": "Location Name",
+            "type": "string"
+          },
+          "code": {
+            "description": "Location Code",
+            "type": "string"
+          }
+        }
+      },
+      "Paging": {
+        "description": "Contains information about the pagination manner in which you want the response to provide the search results.",
+        "type": "object",
+        "properties": {
+          "pageNo": {
+            "format": "int32",
+            "description": "Indicates the start page from where you want to retrieve the search results.",
+            "type": "integer"
+          },
+          "pageSize": {
+            "format": "int32",
+            "description": "Indicates the number of search results/records that the response must return per page.",
+            "type": "integer"
+          },
+          "total": {
+            "format": "int32",
+            "description": "Indicate the total number of records for response.",
+            "type": "integer"
+          }
+        }
+      },
+      "GeoCode": {
+        "description": "Contain information about Geographic coordinates",
+        "type": "object",
+        "properties": {
+          "lat": {
+            "format": "double",
+            "description": "Geographic coordinates - Latitude",
+            "type": "number"
+          },
+          "lng": {
+            "format": "double",
+            "description": "Geographic coordinates - Longitude",
+            "type": "number"
+          }
+        }
+      },
+      "ActivitySearchResponse": {
+        "description": "Contain search ID for activity search, status of api call and Inventory list.",
+        "type": "object",
+        "properties": {
+          "itineraries": {
+            "description": "Contains information about the activity inventories retrieved based on the request parameters.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/ActivityItinerary"
+            }
+          },
+          "searchId": {
+            "description": "Unique ID for this search request. This ID can be used in other requests.",
+            "type": "string"
+          },
+          "currencyCode": {
+            "description": "Currency code on which price return.",
+            "type": "string"
+          },
+          "paging": {
+            "$ref": "#/definitions/Paging",
+            "description": "Pagination"
+          },
+          "status": {
+            "$ref": "#/definitions/Status",
+            "description": "Status of the API call."
+          }
+        }
+      },
+      "ActivityItinerary": {
+        "description": "Contains information about the activity inventory item.",
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "Name of activity.",
+            "type": "string"
+          },
+          "description": {
+            "description": "Description about the activity.",
+            "type": "string"
+          },
+          "category": {
+            "$ref": "#/definitions/ActivityCategory",
+            "description": "Contains information about the category of the activity"
+          },
+          "heroImageUrl": {
+            "description": "URL of the thumbnail image or logo image of the activity.",
+            "type": "string"
+          },
+          "images": {
+            "description": "Contains the list of URLs that contain the photographs of the activity.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Image"
+            }
+          },
+          "legalText": {
+            "description": "Information about the legal policies for the activity.",
+            "type": "string"
+          },
+          "duration": {
+            "description": "Duration of the activity. For example, if a bus tour of the city is for 5 hours, the value of the Duration parameter will be 5 hours.",
+            "type": "string"
+          },
+          "schedule": {
+            "description": "Information about the schedule of the activity. For example, the schedule information for a bus tour can include the information about the venue from where the tour will start and where the tour will end. The information can also include the time when the tour will start and when the tour will end.",
+            "type": "string"
+          },
+          "cancellationPolicies": {
+            "$ref": "#/definitions/CancellationPolicy",
+            "description": "Contains the list of cancellation policies for the activity."
+          },
+          "generalPolicies": {
+            "description": "Contain the list of general policy.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/KeyValue"
+            }
+          },
+          "options": {
+            "description": "Contains a list of options for the activity retrieved. For example, an activity for biking across the town can have multiple options. The options can include hiring the bike for 1 hour, 1 day, or half day.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/ActivityOption"
+            }
+          },
+          "source": {
+            "$ref": "#/definitions/ItinerarySource",
+            "description": "Contains the information about the activity source."
+          },
+          "fare": {
+            "$ref": "#/definitions/Fare",
+            "description": "Contains the information about the activity fare."
+          },
+          "bookingQuestions": {
+            "description": "Contains a list of questions related to the activity that need to be answered while booking the activity. The answers must be passed in the booking api request.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/ActivityBookingQuestion"
+            }
+          },
+          "generalInformation": {
+            "description": "Contains general information about the activity.",
+            "type": "string"
+          },
+          "inclusions": {
+            "description": "Contains information about what things are included in the activity.",
+            "type": "string"
+          },
+          "exclusions": {
+            "description": "Contains information about what things are not included in the activity.",
+            "type": "string"
+          },
+          "id": {
+            "format": "int32",
+            "description": "Unique ID for the inventory item.",
+            "type": "integer"
+          }
+        }
+      },
+      "Status": {
+        "description": "Status of API call",
+        "type": "object",
+        "properties": {
+          "corelationId": {
+            "type": "string"
+          },
+          "code": {
+            "format": "int32",
+            "description": "Code for the status. For example, if the API call is successful, the Code is 200.",
+            "type": "integer"
+          },
+          "isSuccessful": {
+            "description": "Indicates whether the API call is successful.",
+            "type": "boolean"
+          },
+          "message": {
+            "description": "Message corresponding to the status code.",
+            "type": "string"
+          },
+          "warningMessages": {
+            "description": "Additional Message corresponding to the status code if warning.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/MessageInfo"
+            }
+          },
+          "errorMessages": {
+            "description": "Additional Message corresponding to the status code if error.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/MessageInfo"
+            }
+          },
+          "infoMessages": {
+            "description": "AdditionalMessage corresponding to the status code if information.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/MessageInfo"
+            }
+          }
+        }
+      },
+      "ActivityCategory": {
+        "description": "Contains information about the category of the activity",
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "Name of the activity. For example, Sightseeing Tickets and Passes or Transfers and Ground Transport. For the activities with name as Transfers and Ground Transport activities, the value of the Type parameter will always be Transfer.",
+            "type": "string"
+          },
+          "type": {
+            "description": "Type of activity. A Transfer activity means that the activity is related to transfers and ground transportation. For example, an activity that is to transport people from airport to a specific location will have type as Transfer. All the other activities will have Type as NonTransfer.",
+            "type": "string"
+          }
+        }
+      },
+      "Image": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "description": "Image Url",
+            "type": "string"
+          },
+          "type": {
+            "description": "Image type",
+            "type": "string"
+          }
+        }
+      },
+      "CancellationPolicy": {
+        "description": "Contains information about the cancellation policies for the activity.",
+        "type": "object",
+        "properties": {
+          "cancellationRules": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/CancellationRule"
+            }
+          }
+        }
+      },
+      "KeyValue": {
+        "description": "Contain information about key value details.",
+        "type": "object",
+        "properties": {
+          "key": {
+            "description": "Gets or sets the key.",
+            "type": "string"
+          },
+          "value": {
+            "description": "Gets or sets the value.",
+            "type": "string"
+          }
+        }
+      },
+      "ActivityOption": {
+        "description": "Contains information about the option for the activity.",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique ID for the activity option. This ID will be passed in **Price API** for *OptionId*.",
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the activity option. For example, 1-Hour Bike Rental, Half-Day Bike Rental, or Full-Day Bike Rental.",
+            "type": "string"
+          },
+          "isAvailable": {
+            "description": "Indicates whether the activity option is available for booking.",
+            "type": "boolean"
+          },
+          "availableOn": {
+            "description": "Contains a list of date and time when the option is available for booking. For example, the Half-Day Bike Rental option can only be available for December 21, 2015, December 23, 2015, and December 24, 2015.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/DateTimeInfo"
+            }
+          },
+          "selectedDateTime": {
+            "$ref": "#/definitions/DateTimeInfo",
+            "description": "Selected Date time. This parameter is only applicable when a pricing call is made."
+          },
+          "passengerTypesInfo": {
+            "description": "Contains the list of rates of the activity that are applicable to each person type.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/ActivityPassengerFare"
+            }
+          }
+        }
+      },
+      "ItinerarySource": {
+        "description": "Contains information about the supplier who is the source for inventory.",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique ID for the supplier who is the source for the inventory item.",
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the supplier who is the source for the inventory item",
+            "type": "string"
+          }
+        }
+      },
+      "Fare": {
+        "description": "Contain informaiton related to fare.",
+        "type": "object",
+        "properties": {
+          "baseFare": {
+            "format": "double",
+            "description": "Base fare of item.\r\n- Typically, the base price does not include the discount, taxes, fees, or any other additional cost.",
+            "type": "number"
+          },
+          "totalFare": {
+            "format": "double",
+            "description": "Total fare of inventory",
+            "type": "number"
+          },
+          "taxes": {
+            "description": "Contains the list of all the applicable taxes.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/FareComponent"
+            }
+          },
+          "totalTax": {
+            "format": "double",
+            "description": "Total taxes applicable for this.",
+            "type": "number"
+          },
+          "fees": {
+            "description": "Contains the list of all the applicable fees.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/FareComponent"
+            }
+          },
+          "totalDiscount": {
+            "format": "double",
+            "description": "Total discount applicable for this.",
+            "type": "number"
+          },
+          "totalCommission": {
+            "format": "double",
+            "description": "Total commission applicable for this.",
+            "type": "number"
+          },
+          "markups": {
+            "description": "Contain the list of all applicable markup for this.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Markup"
+            }
+          },
+          "totalMarkup": {
+            "format": "double",
+            "description": "Total markup applicable for this.",
+            "type": "number"
+          }
+        }
+      },
+      "ActivityBookingQuestion": {
+        "description": "Contains information about the activity related question.",
+        "type": "object",
+        "properties": {
+          "question": {
+            "description": "Contains the question text.",
+            "type": "string"
+          },
+          "questionId": {
+            "format": "int32",
+            "description": "Contains the question id.",
+            "type": "integer"
+          },
+          "required": {
+            "description": "Specifies if it is mandatory to answer the question.",
+            "type": "boolean"
+          },
+          "title": {
+            "description": "Contains question title.",
+            "type": "string"
+          }
+        }
+      },
+      "MessageInfo": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "description": "Message corresponding to status code.",
+            "type": "string"
+          }
+        }
+      },
+      "CancellationRule": {
+        "type": "object",
+        "properties": {
+          "isQuantifiable": {
+            "description": "Indicates whether the cancellation policy contains the information about the penalty window and the penalty amount. For example, in case of a room booking, if the cancellation policy contains information about the number of days prior to the check-in date when the guest can cancel the room reservation and the penalty amount for the cancellation, this parameter is set to True. If this parameter is set to false, the Window parameter returns a null value.",
+            "type": "boolean"
+          },
+          "description": {
+            "description": "Policy Description",
+            "type": "string"
+          },
+          "type": {
+            "description": "Indicates the type of policy. For cancellation policy, if the Type is FreeCancellation, no penalty amount is charged for canceling the booking. If the Type is Cancellation, the penalty amount for canceling the room will be charged. For general policies, there is no predefined value and the Type parameter accepts any free text value.",
+            "type": "string"
+          },
+          "penalty": {
+            "$ref": "#/definitions/Penalty",
+            "description": "Amount charged for canceling a booking."
+          }
+        }
+      },
+      "DateTimeInfo": {
+        "description": "Contains information about the date and time for which the activity option.",
+        "type": "object",
+        "properties": {
+          "date": {
+            "description": "Date in the format of the default culture. Format : YYYY-MM-DD",
+            "type": "string"
+          },
+          "time": {
+            "description": "Time details. Format - HH:MM",
+            "type": "string"
+          }
+        }
+      },
+      "ActivityPassengerFare": {
+        "description": "Contains information about the rates of the activity that are applicable to the person type.",
+        "type": "object",
+        "properties": {
+          "passengerFare": {
+            "$ref": "#/definitions/Fare",
+            "description": "Passenger Fare"
+          },
+          "maxAge": {
+            "format": "int32",
+            "description": "Maximum age of the person for whom the rate is applicable. For example, if the age range for a child is 7 to 15 years, the MaxAge parameter will be 15.",
+            "type": "integer"
+          },
+          "minAge": {
+            "format": "int32",
+            "description": "Minimum age of the person for whom the rate is applicable. For example, if the age range for a child is 7 to 15 years, the MinAge parameter will be 7.",
+            "type": "integer"
+          },
+          "minQuantity": {
+            "format": "int32",
+            "description": "Minimum number of person type for whom the activity must be booked. For example, if a bus tour activity must be booked for 2 adults, the PassengerType will be Adult and the MinQuantity will be 2.",
+            "type": "integer"
+          },
+          "maxQuantity": {
+            "format": "int32",
+            "description": "Maximum number of person type for whom the activity can be booked in one booking transaction. For example, if a bus tour activity can be booked for maximum of 10 adults, the PassengerType will be Adult and the MaxQuantity will be 10.",
+            "type": "integer"
+          },
+          "passengerType": {
+            "description": "Type of person. For example, adult, child, or senior.",
+            "type": "string"
+          },
+          "step": {
+            "format": "int32",
+            "description": "Number of person type in multiples of which the activity must be booked. For example, for activities that can be booked on per adult basis, the value of the step parameter will be 1. For activities that must be booked for minimum 2 adults, the step parameter will be 2.",
+            "type": "integer"
+          },
+          "quantity": {
+            "format": "int32",
+            "description": "Number of persons for which the rate is applicable. For example, if the rate information in the Fare parameter is applicable for 3 adults, the PassengerType parameter will be Adult and the Quantity parameter will be 3.",
+            "type": "integer"
+          }
+        }
+      },
+      "FareComponent": {
+        "description": "Contains information about various break-up components that are part of the total cost.",
+        "type": "object",
+        "properties": {
+          "code": {
+            "description": "Unique code of component",
+            "type": "string"
+          },
+          "amount": {
+            "format": "double",
+            "description": "Cost Value.",
+            "type": "number"
+          },
+          "description": {
+            "description": "Description or additional information of component that is being charged.",
+            "type": "string"
+          }
+        }
+      },
+      "Markup": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "ownerId": {
+            "type": "string"
+          },
+          "id": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "code": {
+            "description": "Unique code of component",
+            "type": "string"
+          },
+          "amount": {
+            "format": "double",
+            "description": "Cost Value.",
+            "type": "number"
+          },
+          "description": {
+            "description": "Description or additional information of component that is being charged.",
+            "type": "string"
+          }
+        }
+      },
+      "Penalty": {
+        "description": "Amount charged for canceling a booking.",
+        "type": "object",
+        "properties": {
+          "amount": {
+            "format": "double",
+            "description": "Applicable penalty amount.",
+            "type": "number"
+          },
+          "window": {
+            "$ref": "#/definitions/PenaltyWindow",
+            "description": "Window during when the penalty is applicable."
+          }
+        }
+      },
+      "PenaltyWindow": {
+        "description": "Window during when the penalty is applicable.",
+        "type": "object",
+        "properties": {
+          "start": {
+            "description": "Start date and time for the window.",
+            "type": "string"
+          },
+          "end": {
+            "description": "End date and time for the window.",
+            "type": "string"
+          }
+        }
+      },
+      "ActivityOptionsResponse": {
+        "type": "object",
+        "properties": {
+          "itinerary": {
+            "$ref": "#/definitions/ActivityItinerary",
+            "description": "Contains information about the activity inventory."
+          },
+          "searchId": {
+            "description": "Unique ID for this search request. This ID can be used in other requests.",
+            "type": "string"
+          },
+          "currencyCode": {
+            "description": "Currency code on which price return.",
+            "type": "string"
+          },
+          "paging": {
+            "$ref": "#/definitions/Paging",
+            "description": "Pagination"
+          },
+          "status": {
+            "$ref": "#/definitions/Status",
+            "description": "Status of the API call."
+          }
+        }
+      },
+      "CarSearchRequest": {
+        "description": "Contains information about the search criteria.",
+        "type": "object",
+        "properties": {
+          "pickUp": {
+            "$ref": "#/definitions/Location"
+          },
+          "dropOff": {
+            "$ref": "#/definitions/Location"
+          },
+          "pickUpDateTime": {
+            "description": "Contain information about pickup date and time. Format - *YYYY-MM-DD HH:mm*",
+            "type": "string"
+          },
+          "dropOffDateTime": {
+            "description": "Contain information about drop off date and time. Format - *YYYY-MM-DD HH:mm*",
+            "type": "string"
+          },
+          "preferences": {
+            "$ref": "#/definitions/CarPreferences",
+            "description": "Contains information about the preferences for the car search. For example, preferences for the car type or the car rental company. The API returns only the list of cars that match all the preferences specified."
+          },
+          "discountCodes": {
+            "description": "Contsins information about car discount codes.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/CarDiscountCode"
+            }
+          },
+          "searchId": {
+            "description": "Unique id for this search.",
+            "type": "string"
+          },
+          "userType": {
+            "description": "User type is mainly used for markup calculation.",
+            "type": "string"
+          },
+          "userCountryCode": {
+            "description": "User country code can be used in markups and fee calculation.",
+            "type": "string"
+          },
+          "paginationInfo": {
+            "$ref": "#/definitions/Paging",
+            "description": "Pagination information."
+          }
+        }
+      },
+      "CarPreferences": {
+        "description": "Contains information about the preferences for the car search.",
+        "type": "object",
+        "properties": {
+          "rentalCompanies": {
+            "description": "List of rental companies. For example, ACME Car Rentals.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "carTypes": {
+            "description": "List of car types. For example, passenger van, sports car, or SUV.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "carCategories": {
+            "description": "List of car categories. For example, Economy, Compact, or Standard.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "transmission": {
+            "description": "Transmission type of the car. For example, manual or automatic.",
+            "enum": [
+              "NotSpecified",
+              "Automatic",
+              "Manual"
+            ],
+            "type": "string"
+          }
+        }
+      },
+      "CarDiscountCode": {
+        "type": "object",
+        "properties": {
+          "discountType": {
+            "description": "Contains information of discount type.",
+            "enum": [
+              "PromotionalCode",
+              "CorporateDiscount",
+              "VendorIDNumber",
+              "RateCode"
+            ],
+            "type": "string"
+          },
+          "number": {
+            "description": "Contains car discount code/number",
+            "type": "string"
+          },
+          "vendorCode": {
+            "description": "Contains information about vendorcode. Ex : AC,AD etc.",
+            "type": "string"
+          }
+        }
+      },
+      "CarSearchResponse": {
+        "type": "object",
+        "properties": {
+          "itineraries": {
+            "description": "Contains information about the car inventories retrieved based on the request parameters.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/CarItinerary"
+            }
+          },
+          "searchId": {
+            "description": "Unique ID for this search request. This ID can be used in other requests.",
+            "type": "string"
+          },
+          "currencyCode": {
+            "description": "Currency code on which price return.",
+            "type": "string"
+          },
+          "paging": {
+            "$ref": "#/definitions/Paging",
+            "description": "Pagination"
+          },
+          "status": {
+            "$ref": "#/definitions/Status",
+            "description": "Status of the API call."
+          }
+        }
+      },
+      "CarItinerary": {
+        "description": "Contains information about the car inventory retrieved.",
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "Name of car.",
+            "type": "string"
+          },
+          "brand": {
+            "$ref": "#/definitions/CarBrand"
+          },
+          "imageUrl": {
+            "description": "URL of the thumbnail image or logo image of the car.",
+            "type": "string"
+          },
+          "isAirConditioned": {
+            "description": "Indicates whether the car has air conditioning.",
+            "type": "boolean"
+          },
+          "capacity": {
+            "description": "Number of travelers that can be accommodated in the car. For example, for a sedan car, the capacity can be FourtoFive or for an SUV car, the capacity can be SixPlus.",
+            "type": "string"
+          },
+          "category": {
+            "description": "Class of the car. For example, economy, compact, or premium.",
+            "type": "string"
+          },
+          "baggage": {
+            "format": "int32",
+            "description": "Number of baggage items that can be accommodated in the car.",
+            "type": "integer"
+          },
+          "doors": {
+            "description": "Number of doors on the car. For example, two-door, four-door.",
+            "type": "string"
+          },
+          "driveType": {
+            "description": "Drive wheel type. For example, two-wheel drive or four-wheel drive.",
+            "type": "string"
+          },
+          "fuelType": {
+            "description": "Engine fuel type. For example, gas, diesel, or electric.",
+            "type": "string"
+          },
+          "transmission": {
+            "description": "Transmission type. For example, manual or automatic",
+            "type": "string"
+          },
+          "vehicleType": {
+            "description": "Type of car. For example, passenger van, sports car, or SUV. Multiple car types can have the same category. For example, the Sports and the Convertible VehicleType can have the category as Premium.",
+            "type": "string"
+          },
+          "generalPolicies": {
+            "description": "List of general policies applicable when renting the car. For example, there can be a policy about the deposit required for renting the car or a policy about the chauffeur service offered with the car.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/CarPolicy"
+            }
+          },
+          "mileage": {
+            "$ref": "#/definitions/Mileage"
+          },
+          "pickUpInfo": {
+            "$ref": "#/definitions/CarRentalInfo"
+          },
+          "dropOffInfo": {
+            "$ref": "#/definitions/CarRentalInfo"
+          },
+          "carCancellationPolicies": {
+            "$ref": "#/definitions/CancellationPolicy"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "guaranteeText": {
+            "type": "string"
+          },
+          "fare": {
+            "$ref": "#/definitions/Fare"
+          },
+          "source": {
+            "$ref": "#/definitions/ItinerarySource"
+          },
+          "rentalPeriod": {
+            "$ref": "#/definitions/RentalPeriod"
+          },
+          "isGuaranteeRequired": {
+            "description": "Indicates whether credit card information needs to be taken at the time of booking.",
+            "type": "boolean"
+          },
+          "id": {
+            "format": "int32",
+            "description": "Unique ID for the inventory item.",
+            "type": "integer"
+          }
+        }
+      },
+      "CarBrand": {
+        "description": "Contains information about the car rental company.",
+        "type": "object",
+        "properties": {
+          "code": {
+            "description": "Code for the brand",
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the brand",
+            "type": "string"
+          },
+          "logo": {
+            "description": "Logo of the brand",
+            "type": "string"
+          }
+        }
+      },
+      "CarPolicy": {
+        "description": "Contains information about the policies for the car.",
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Name of the car policy. For example, Deposit Fee or Fee to Pay on arrival.",
+            "type": "string"
+          },
+          "policies": {
+            "description": "Contains the list of policies specified in the Type parameter. For example, the Deposit Fee policy lists the amount that is required as the deposit for the car.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "Mileage": {
+        "description": "Contains information about the mileage cap for the car rental and the charges that are applicable after the mileage cap is exceeded. This can also contain information about the car rental period and the charges applicable if the car rental period is exceeded.",
+        "type": "object",
+        "properties": {
+          "allowedUnits": {
+            "$ref": "#/definitions/Distance"
+          },
+          "isUnlimited": {
+            "description": "Indicates whether the car rental comes with unlimited mileage. If this is set to True, the value for the AllowedUnits parameter will be 0 and the ExtraMileageCharges parameter will be null, by default.",
+            "type": "boolean"
+          },
+          "rateType": {
+            "description": "Rate type based on which the traveler is charged for the car rental. For example, if the RateType is per-day, the traveler is charged on a per-day basis or if the RateType is weekly, the traveler is charged on a per-week basis.",
+            "type": "string"
+          },
+          "extraMileageCharges": {
+            "description": "Contains information about the amount charged for the extra mileage when the mileage cap is exceeded or the car rental period is exceeded.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/CarCharge"
+            }
+          }
+        }
+      },
+      "CarRentalInfo": {
+        "type": "object",
+        "properties": {
+          "atAirport": {
+            "type": "boolean"
+          },
+          "inTerminal": {
+            "type": "boolean"
+          },
+          "shuttleInfo": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "address": {
+            "$ref": "#/definitions/Address"
+          }
+        }
+      },
+      "RentalPeriod": {
+        "description": "Contains information related to rental period of car.",
+        "type": "object",
+        "properties": {
+          "start": {
+            "description": "Start of rental period.",
+            "type": "string"
+          },
+          "end": {
+            "description": "End of rental period.",
+            "type": "string"
+          }
+        }
+      },
+      "Distance": {
+        "description": "Contains information about the mileage cap or the car rental period. For example, if the car rental rate is $100 and this includes a 50-mile cap for the mileage, the AllowedUnits parameter is 50 miles. After the 50 miles mileage cap is exceeded, the car rental company might charge the traveler on a per-mile basis. Another example is when the car rental rate is $1000 and the car rental period is of 15 days, the AllowedUnits parameter is 15 days.",
+        "type": "object",
+        "properties": {
+          "amount": {
+            "format": "float",
+            "description": "Value of the distance. For example, 5, 10, or 20.",
+            "type": "number"
+          },
+          "from": {
+            "description": "Point of reference from where the distance is calculated. For example, city, airport, or address.",
+            "type": "string"
+          },
+          "unit": {
+            "description": "Unit for the distance. For example, Kilometer or Miles.",
+            "type": "string"
+          }
+        }
+      },
+      "CarCharge": {
+        "description": "Contains information about the charges that are applicable when the mileage cap or the rental period is exceeded.",
+        "type": "object",
+        "properties": {
+          "description": {
+            "description": "Description about the charge.",
+            "type": "string"
+          },
+          "quantity": {
+            "format": "int32",
+            "description": "Value of the excess mileage or the additional car rental time period.",
+            "type": "integer"
+          },
+          "type": {
+            "description": "Type of car rental policy based on which the additional charges are applied.",
+            "type": "string"
+          },
+          "unit": {
+            "description": "Unit based on which the additional charges are applied.",
+            "type": "string"
+          },
+          "association": {
+            "description": "Indicates whether the amount charged for the additional mileage or additional rental period is included in the base rate charged for the car rental.",
+            "type": "string"
+          },
+          "charge": {
+            "description": "Car charge information.",
+            "type": "string"
+          }
+        }
+      },
+      "Address": {
+        "description": "Contain information about address",
+        "type": "object",
+        "properties": {
+          "addressLine1": {
+            "description": "Address Line 1",
+            "type": "string"
+          },
+          "addressLine2": {
+            "description": "Address Line 2",
+            "type": "string"
+          },
+          "zipCode": {
+            "description": "Zip Code",
+            "type": "string"
+          },
+          "cityName": {
+            "description": "Name of city",
+            "type": "string"
+          },
+          "coutryCode": {
+            "description": "Code of city",
+            "type": "string"
+          },
+          "countryName": {
+            "description": "Name of country",
+            "type": "string"
+          },
+          "stateCode": {
+            "description": "Code of state",
+            "type": "string"
+          },
+          "stateName": {
+            "description": "Name of state",
+            "type": "string"
+          }
+        }
+      },
+      "FlightSearchRequest": {
+        "description": "Contains information about the search criteria.",
+        "type": "object",
+        "properties": {
+          "preferences": {
+            "$ref": "#/definitions/FlightPreferences"
+          },
+          "passengers": {
+            "description": "Contains the list of information about the passengers.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/PassengerDetails"
+            }
+          },
+          "legs": {
+            "description": "Contains the list of flight legs.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/SearchLeg"
+            }
+          },
+          "tripType": {
+            "description": "Type of itinerary that specifies whether the flight is a one-way trip, a roundtrip, or a multi-city trip.",
+            "enum": [
+              "OneWay",
+              "Multicity",
+              "RoundTrip"
+            ],
+            "type": "string"
+          },
+          "searchId": {
+            "description": "Unique id for this search.",
+            "type": "string"
+          },
+          "userType": {
+            "description": "User type is mainly used for markup calculation.",
+            "type": "string"
+          },
+          "userCountryCode": {
+            "description": "User country code can be used in markups and fee calculation.",
+            "type": "string"
+          },
+          "paginationInfo": {
+            "$ref": "#/definitions/Paging",
+            "description": "Pagination information."
+          }
+        }
+      },
+      "FlightPreferences": {
+        "description": "Contains the preferences for the flight search. The API returns the flights that match all the preferences\r\nspecified.",
+        "type": "object",
+        "properties": {
+          "nonStopOnly": {
+            "description": "Indicates whether the search results must include non-stop flights from the origin location to the destination\r\nlocation. A non-stop flight is a flight that does not have any layover. For example, a direct flight from John F.\r\nKennedy International Airport (JFK) to McCarran International Airport (LAS).",
+            "type": "boolean"
+          },
+          "cabinType": {
+            "description": "Type of cabin",
+            "enum": [
+              "NoPreference",
+              "Economy",
+              "First",
+              "Business",
+              "PremiumEconomy",
+              "Unknown"
+            ],
+            "type": "string"
+          },
+          "refundableOnly": {
+            "description": "Indicates whether the search results must include only the inventory with refundable fares.",
+            "type": "boolean"
+          },
+          "prohibitMixedAirlines": {
+            "description": "Indicates whether the search results should include segments of mixed airlines or not.",
+            "type": "boolean"
+          },
+          "airlinePreferences": {
+            "$ref": "#/definitions/AirlinePreferences",
+            "description": "Airline Preference"
+          }
+        }
+      },
+      "PassengerDetails": {
+        "description": "Contains information about the passengers.",
+        "type": "object",
+        "properties": {
+          "count": {
+            "format": "int32",
+            "description": "Number of passengers",
+            "type": "integer"
+          },
+          "type": {
+            "description": "Type of passenger",
+            "enum": [
+              "Adult",
+              "Child",
+              "Infant",
+              "Senior"
+            ],
+            "type": "string"
+          },
+          "ages": {
+            "description": "List that contains the age for each passenger. The Age group for adult passengers is 12 to 65 years, for child passengers is 2 to 12 years, for senior passengers is 65 years onwards, and for infants is less than 2 years.",
+            "type": "array",
+            "items": {
+              "format": "int32",
+              "type": "integer"
+            }
+          }
+        }
+      },
+      "SearchLeg": {
+        "description": "Contains information about the flight leg. A flight leg is an itinerary that consists one or more flight segments\r\nbetween the origin airport and the destination airport. For a non-stop flight itinerary, the API returns one flight\r\nleg and one flight segment, which is same as the flight leg. For a flight itinerary with a connecting flight, the\r\nAPI returns a flight leg with two flight segments. For a round-trip itinerary, the API returns two flight legs. One\r\nleg will be for the onward flight and the second leg will be for the return flight. Each leg can have one or more\r\nsegments.",
+        "type": "object",
+        "properties": {
+          "departureLocation": {
+            "$ref": "#/definitions/Location",
+            "description": "Contains information about the location of the departure airport."
+          },
+          "arrivalLocation": {
+            "$ref": "#/definitions/Location",
+            "description": "Contains information about the location of the arrival airport."
+          },
+          "includeNearByAirports": {
+            "description": "Indicates whether the airports near the specified departure location must be included in the search results.",
+            "type": "boolean"
+          },
+          "departureDate": {
+            "description": "Contains information about the travel date. Format - *YYYY-MM-DD*",
+            "type": "string"
+          },
+          "departureTime": {
+            "description": "Contains information about the travel date. Format - *HH:MM:SS*",
+            "type": "string"
+          }
+        }
+      },
+      "AirlinePreferences": {
+        "description": "Contain information airline preference",
+        "type": "object",
+        "properties": {
+          "preferred": {
+            "description": "Contains the list of preferred airlines in flight search. This is just the preference list result may contain results from other airlines as well. If you want to restrict results to specific airlines then pass EnforcePreferred parameter value as true.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "prohibited": {
+            "description": "Contains the list of airline codes that must be excluded from the flight search.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "enforcePreferred": {
+            "description": "Indicates if preferred airlines should be enforced or not. e.g. if preferred airlines are passed as AA,DL and EnforcePreferred is set as true then all results will have flights from AA and DL airlines only.",
+            "type": "boolean"
+          }
+        }
+      },
+      "FlightSearchResponse": {
+        "type": "object",
+        "properties": {
+          "itineraries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/FlightItinerary"
+            }
+          },
+          "uniqueSegments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/FlightSegment"
+            }
+          },
+          "tripType": {
+            "enum": [
+              "OneWay",
+              "Multicity",
+              "RoundTrip"
+            ],
+            "type": "string"
+          },
+          "searchId": {
+            "description": "Unique ID for this search request. This ID can be used in other requests.",
+            "type": "string"
+          },
+          "currencyCode": {
+            "description": "Currency code on which price return.",
+            "type": "string"
+          },
+          "paging": {
+            "$ref": "#/definitions/Paging",
+            "description": "Pagination"
+          },
+          "status": {
+            "$ref": "#/definitions/Status",
+            "description": "Status of the API call."
+          }
+        }
+      },
+      "FlightItinerary": {
+        "description": "Contains information about the flight inventory item.",
+        "type": "object",
+        "properties": {
+          "fare": {
+            "$ref": "#/definitions/FlightFare",
+            "description": "Contain information about flight fare."
+          },
+          "legs": {
+            "description": "Contains the list of flight legs that are returned for the itinerary.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/FlightLeg"
+            }
+          },
+          "isFareRefundable": {
+            "description": "Indicates whether the airfare is refundable.",
+            "type": "boolean"
+          },
+          "source": {
+            "$ref": "#/definitions/ItinerarySource",
+            "description": "Inventory source"
+          },
+          "platingCarrier": {
+            "$ref": "#/definitions/Airline"
+          },
+          "id": {
+            "format": "int32",
+            "description": "Unique ID for the inventory item.",
+            "type": "integer"
+          }
+        }
+      },
+      "FlightSegment": {
+        "description": "Contains information about the flight segment",
+        "type": "object",
+        "properties": {
+          "aircraftType": {
+            "description": "Type of aircraft for the flight. e.g. BOEING 737-800 or Airbus A320.",
+            "type": "string"
+          },
+          "airline": {
+            "$ref": "#/definitions/Airline",
+            "description": "AirLine Details. e.g. American AirLine, Delta Airline."
+          },
+          "operatingAirline": {
+            "$ref": "#/definitions/Airline",
+            "description": "Operating AirLine Details."
+          },
+          "arrivalAirport": {
+            "$ref": "#/definitions/Airport",
+            "description": "Arrival Airport Details."
+          },
+          "arrivalTerminal": {
+            "description": "Terminal of the airport where the flight is arriving.",
+            "type": "string"
+          },
+          "arrivalTime": {
+            "$ref": "#/definitions/TravelDate",
+            "description": "Time at which flight will arrive."
+          },
+          "cabinType": {
+            "description": "Service Type/Catagory. e.g. Business, Economy.",
+            "type": "string"
+          },
+          "departureAirport": {
+            "$ref": "#/definitions/Airport",
+            "description": "Departure Airport Details."
+          },
+          "departureTerminal": {
+            "description": "Terminal of the airport from where the flight departs.",
+            "type": "string"
+          },
+          "departureTime": {
+            "$ref": "#/definitions/TravelDate",
+            "description": "Time at which flight will depart."
+          },
+          "durationInMinuites": {
+            "format": "int32",
+            "description": "Total flight duration for the flight segment in minutes.",
+            "type": "integer"
+          },
+          "flightNumber": {
+            "description": "Unique number that the airline provides for the flight. e.g. 301, 678, or 6254.",
+            "type": "string"
+          },
+          "mileage": {
+            "$ref": "#/definitions/AirMileage"
+          },
+          "numberOfStops": {
+            "format": "int32",
+            "description": "Number of stops that a flight makes at one or more airports before reaching the destination airport. For stops in the same flight segment, the stops made are called change of gauge. A change of gauge stop is made to transfer passengers from one aircraft to another, to refuel the aircraft, or for any technical support. For a change of gauge stop, the flight number remains the same. The part of the segment after the change of gauge stop is named as an artificial segment.",
+            "type": "integer"
+          },
+          "id": {
+            "format": "int32",
+            "description": "Unique Id for segment reference number",
+            "type": "integer"
+          },
+          "layoverInfo": {
+            "$ref": "#/definitions/LayOverDetails"
+          },
+          "stopDetails": {
+            "description": "Contain the list of additional stop details like Change Of Gauge, Technical stop.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/StopDetail"
+            }
+          },
+          "paxFareDetails": {
+            "description": "Contain information about passenger, class of service, fare basic code details.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/PaxFareDetail"
+            }
+          },
+          "segmentKey": {
+            "description": "Unique segment reference key. This key will be used in seat map api call.",
+            "type": "string"
+          }
+        }
+      },
+      "FlightFare": {
+        "description": "Contain information about flight fare details",
+        "type": "object",
+        "properties": {
+          "passengerFare": {
+            "description": "Contains the list of fare information applicable to each passenger type.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/PassengerFare"
+            }
+          },
+          "type": {
+            "type": "string"
+          },
+          "fareRestrictionTypes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "baseFare": {
+            "format": "double",
+            "description": "Base fare of item.\r\n- Typically, the base price does not include the discount, taxes, fees, or any other additional cost.",
+            "type": "number"
+          },
+          "totalFare": {
+            "format": "double",
+            "description": "Total fare of inventory",
+            "type": "number"
+          },
+          "taxes": {
+            "description": "Contains the list of all the applicable taxes.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/FareComponent"
+            }
+          },
+          "totalTax": {
+            "format": "double",
+            "description": "Total taxes applicable for this.",
+            "type": "number"
+          },
+          "fees": {
+            "description": "Contains the list of all the applicable fees.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/FareComponent"
+            }
+          },
+          "totalDiscount": {
+            "format": "double",
+            "description": "Total discount applicable for this.",
+            "type": "number"
+          },
+          "totalCommission": {
+            "format": "double",
+            "description": "Total commission applicable for this.",
+            "type": "number"
+          },
+          "markups": {
+            "description": "Contain the list of all applicable markup for this.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Markup"
+            }
+          },
+          "totalMarkup": {
+            "format": "double",
+            "description": "Total markup applicable for this.",
+            "type": "number"
+          }
+        }
+      },
+      "FlightLeg": {
+        "description": "Contains information about the flight leg. A flight leg consists of one or more flight segments between the origin airport and the destination airport. For a non-stop flight itinerary, the API returns flight legs with each leg containing only one flight segment. For a flight itinerary with connecting flights, the API returns a flight leg with two or more flight segments. For a round-trip itinerary, the API returns two flight legs. One leg will be for the onward flight and the second leg will be for the return flight. Each leg can have one or more segments.",
+        "type": "object",
+        "properties": {
+          "segmentRefs": {
+            "description": "Contain the list of flight segment refIds.",
+            "type": "array",
+            "items": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "noOfStops": {
+            "format": "int32",
+            "description": "Number of stops that a flight makes at one or more airports before reaching at the destination airport.",
+            "type": "integer"
+          },
+          "durationInHours": {
+            "format": "int32",
+            "description": "Total duration of the flight leg.",
+            "type": "integer"
+          }
+        }
+      },
+      "Airline": {
+        "description": "Contains Details of Airlines like AA(American Airways), DL(Delta Airways)",
+        "type": "object",
+        "properties": {
+          "code": {
+            "description": "Code for the marketing airline. For example, for ACME Airlines, the code can be AC.",
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the marketing airline. For example, ACME Airlines or Wayne Airlines.",
+            "type": "string"
+          },
+          "logoUrl": {
+            "description": "URL of the logo image for the marketing airline.",
+            "type": "string"
+          }
+        }
+      },
+      "Airport": {
+        "description": "Contains information about the location of the destination airport.",
+        "type": "object",
+        "properties": {
+          "cityName": {
+            "description": "Name of city",
+            "type": "string"
+          },
+          "countryCode": {
+            "description": "Country Code",
+            "type": "string"
+          },
+          "stateCode": {
+            "description": "State Code",
+            "type": "string"
+          },
+          "refId": {
+            "format": "int32",
+            "description": "Optional. Loacation Id",
+            "type": "integer"
+          },
+          "geoCode": {
+            "$ref": "#/definitions/GeoCode"
+          },
+          "type": {
+            "description": "Location Type",
+            "enum": [
+              "Airport",
+              "City",
+              "Address"
+            ],
+            "type": "string"
+          },
+          "name": {
+            "description": "Location Name",
+            "type": "string"
+          },
+          "code": {
+            "description": "Location Code",
+            "type": "string"
+          }
+        }
+      },
+      "TravelDate": {
+        "description": "Contains information about the date and time.",
+        "type": "object",
+        "properties": {
+          "date": {
+            "description": "Contain information about Date",
+            "type": "string"
+          },
+          "time": {
+            "description": "Contain information about Time",
+            "type": "string"
+          }
+        }
+      },
+      "AirMileage": {
+        "description": "Contains information about the distance between the two airports of the flight segment.",
+        "type": "object",
+        "properties": {
+          "amount": {
+            "format": "float",
+            "description": "Value of the distance. For example, 200, 300, or 500.",
+            "type": "number"
+          },
+          "unit": {
+            "enum": [
+              "Mi",
+              "Km"
+            ],
+            "type": "string"
+          }
+        }
+      },
+      "LayOverDetails": {
+        "description": "Contains information about the flight layover. A layover is made when one segment ends. A passenger might have to change flights and terminals to board on the connecting segment flight.",
+        "type": "object",
+        "properties": {
+          "durationInMinutes": {
+            "format": "int32",
+            "description": "Time duration of the layover in minutes.",
+            "type": "integer"
+          },
+          "airport": {
+            "$ref": "#/definitions/Airport"
+          },
+          "isChangeOfFlight": {
+            "description": "Indicates whether the layover will be made to transfer passengers from one flight to another.",
+            "type": "boolean"
+          }
+        }
+      },
+      "StopDetail": {
+        "description": "Contains information about the additional stop made to transfer passengers from one aircraft to another, to refuel the aircraft, or for any technical support. For change of gauge stop, the flight number remains the same.",
+        "type": "object",
+        "properties": {
+          "type": {
+            "enum": [
+              "Other",
+              "ChangeOfGauge",
+              "Technical"
+            ],
+            "type": "string"
+          },
+          "airport": {
+            "$ref": "#/definitions/Airport"
+          },
+          "departureTime": {
+            "$ref": "#/definitions/TravelDate"
+          },
+          "arrivalTime": {
+            "$ref": "#/definitions/TravelDate"
+          }
+        }
+      },
+      "PaxFareDetail": {
+        "description": "Passenger fare basisc details",
+        "type": "object",
+        "properties": {
+          "fareBasisCode": {
+            "type": "string"
+          },
+          "passengerType": {
+            "enum": [
+              "Adult",
+              "Child",
+              "Infant",
+              "Senior"
+            ],
+            "type": "string"
+          },
+          "classofService": {
+            "type": "string"
+          }
+        }
+      },
+      "PassengerFare": {
+        "description": "Contains fare information for a specific passenger type",
+        "type": "object",
+        "properties": {
+          "passengerCount": {
+            "format": "int32",
+            "description": "Number of passengers to which the fare will be applicable. For example, if the fare information in the Fare parameter is applicable to 3 adults, the PassengerType parameter will be Adult and the Quantity parameter will be 3.",
+            "type": "integer"
+          },
+          "type": {
+            "description": "Type of passenger. For example, adult, child, or senior.",
+            "type": "string"
+          },
+          "baseFare": {
+            "format": "double",
+            "description": "Base fare of item.\r\n- Typically, the base price does not include the discount, taxes, fees, or any other additional cost.",
+            "type": "number"
+          },
+          "totalFare": {
+            "format": "double",
+            "description": "Total fare of inventory",
+            "type": "number"
+          },
+          "taxes": {
+            "description": "Contains the list of all the applicable taxes.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/FareComponent"
+            }
+          },
+          "totalTax": {
+            "format": "double",
+            "description": "Total taxes applicable for this.",
+            "type": "number"
+          },
+          "fees": {
+            "description": "Contains the list of all the applicable fees.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/FareComponent"
+            }
+          },
+          "totalDiscount": {
+            "format": "double",
+            "description": "Total discount applicable for this.",
+            "type": "number"
+          },
+          "totalCommission": {
+            "format": "double",
+            "description": "Total commission applicable for this.",
+            "type": "number"
+          },
+          "markups": {
+            "description": "Contain the list of all applicable markup for this.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Markup"
+            }
+          },
+          "totalMarkup": {
+            "format": "double",
+            "description": "Total markup applicable for this.",
+            "type": "number"
+          }
+        }
+      },
+      "FareRulesResponse": {
+        "description": "FareRules Response",
+        "type": "object",
+        "properties": {
+          "fareRules": {
+            "description": "Contains the list of the fare rules retrieved.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/FareRule"
+            }
+          },
+          "status": {
+            "$ref": "#/definitions/Status",
+            "description": "Status of the API call."
+          }
+        }
+      },
+      "FareRule": {
+        "description": "Contains information about the fare rules retrieved.",
+        "type": "object",
+        "properties": {
+          "fareBasisCode": {
+            "description": "A fare basis code is an alpha or alpha-numeric code that the airline uses to identify the fare type. The fare rules\r\nare retrieved based on the fare basis codes.",
+            "type": "string"
+          },
+          "fareRuleDetails": {
+            "description": "Contains a list of fare rules with the title and the description for each fare rule.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/FareRuleDetail"
+            }
+          }
+        }
+      },
+      "FareRuleDetail": {
+        "description": "Fare rule details applicable for respective fare basis code",
+        "type": "object",
+        "properties": {
+          "title": {
+            "description": "Title of the fare rule.",
+            "type": "string"
+          },
+          "text": {
+            "description": "Description of the fare rule.",
+            "type": "string"
+          }
+        }
+      },
+      "SeatMapResponse": {
+        "description": "Seat map response",
+        "type": "object",
+        "properties": {
+          "seatMap": {
+            "$ref": "#/definitions/SeatMap",
+            "description": "Contains information about the seat map of the flight."
+          },
+          "status": {
+            "$ref": "#/definitions/Status",
+            "description": "Status of the API call."
+          }
+        }
+      },
+      "SeatMap": {
+        "description": "Contains information about the seat map of the flight.",
+        "type": "object",
+        "properties": {
+          "cabinType": {
+            "description": "Contain information about cabin type",
+            "enum": [
+              "NoPreference",
+              "Economy",
+              "First",
+              "Business",
+              "PremiumEconomy",
+              "Unknown"
+            ],
+            "type": "string"
+          },
+          "classOfService": {
+            "description": "Flight class of service. For example, business class, economy class, or first class.",
+            "type": "string"
+          },
+          "cabins": {
+            "description": "Contain information about list of cabins",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Cabin"
+            }
+          }
+        }
+      },
+      "Cabin": {
+        "description": "Contain information about cabin details",
+        "type": "object",
+        "properties": {
+          "cabinFacilities": {
+            "description": "Contain informaiton about cabin facilities",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/CabinFacility"
+            }
+          },
+          "capacity": {
+            "format": "int32",
+            "description": "Contain informaiton about cabin capacity",
+            "type": "integer"
+          },
+          "columns": {
+            "description": "Contains information about list of seat columns.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/SeatColumn"
+            }
+          },
+          "rows": {
+            "description": "Contain information about list of seat rows.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/SeatRow"
+            }
+          },
+          "seats": {
+            "description": "Contain informaiton about list of seat.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Seat"
+            }
+          },
+          "cabinLocation": {
+            "description": "Cabin location information.",
+            "enum": [
+              "Unknown",
+              "Maindeck",
+              "Lowerdeck",
+              "Upperdeck"
+            ],
+            "type": "string"
+          }
+        }
+      },
+      "CabinFacility": {
+        "description": "Contain information about cabin facility",
+        "type": "object",
+        "properties": {
+          "cabinFacilityLocation": {
+            "description": "Cabin facility informaiton",
+            "enum": [
+              "None",
+              "Center",
+              "LeftCenter",
+              "Left",
+              "RightCenter",
+              "Right",
+              "Rear",
+              "Front"
+            ],
+            "type": "string"
+          },
+          "cabinFacilityType": {
+            "description": "Cabin facility type",
+            "enum": [
+              "None",
+              "Airphone",
+              "Bar",
+              "Closet",
+              "EmergencyExit",
+              "ExitDoor",
+              "Gallery",
+              "Galley",
+              "LuggageStorage",
+              "MovieScreen",
+              "QuietArea",
+              "SmokingArea",
+              "StairsToUpperDeck",
+              "StorageSpace",
+              "Table",
+              "Lavatory",
+              "Bulkhead"
+            ],
+            "type": "string"
+          }
+        }
+      },
+      "SeatColumn": {
+        "description": "Contains a list of seat columns.",
+        "type": "object",
+        "properties": {
+          "columnCharacter": {
+            "description": "Seat column identifier",
+            "type": "string"
+          },
+          "columnType": {
+            "description": "Type of seat column",
+            "enum": [
+              "NotApplicable",
+              "Window",
+              "Aisle",
+              "Middle"
+            ],
+            "type": "string"
+          }
+        }
+      },
+      "SeatRow": {
+        "type": "object",
+        "properties": {
+          "rowCharacteristics": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "None",
+                "BufferRow",
+                "ExitLeft",
+                "ExitRight",
+                "ExitRow",
+                "FirstRow",
+                "LowerdeckRow",
+                "MaindeckRow",
+                "MiddleRow",
+                "NonSmokingRow",
+                "NotOverwingRow",
+                "OverwingRow",
+                "RearRow",
+                "RowWithMovieScreen",
+                "SmokingRow",
+                "UpperDeckRow",
+                "BulkheadRow",
+                "LeftOfAisle",
+                "RightOfAisle"
+              ],
+              "type": "string"
+            }
+          },
+          "rowNumber": {
+            "format": "int32",
+            "type": "integer"
+          }
+        }
+      },
+      "Seat": {
+        "description": "Contain information about Seat",
+        "type": "object",
+        "properties": {
+          "columnCharacter": {
+            "description": "Seat column identifier",
+            "type": "string"
+          },
+          "rowNumber": {
+            "format": "int32",
+            "description": "Seat row number",
+            "type": "integer"
+          },
+          "seatCharacteristics": {
+            "description": "Description of seat characteristics (Can be multiple, see appendix for possible values)",
+            "type": "array",
+            "items": {
+              "enum": [
+                "None",
+                "AirportBlock",
+                "Aisle",
+                "AisleToLeft",
+                "AisleToRight",
+                "BehindGallery",
+                "BehindLavatory",
+                "Blocked",
+                "BlockedForPreferredPassenger",
+                "Buffer",
+                "BufferZone",
+                "Bulkhead",
+                "BulkheadSeatWithMovieScreen",
+                "Middle",
+                "MiddleSection",
+                "Crew",
+                "Deportee",
+                "EconomyComfort",
+                "ElectronicConnectionAvailable",
+                "ExitRowSeats",
+                "FrontOfCabinClass",
+                "FullyRecline",
+                "FrontOfGalley",
+                "FrontOfLavatory",
+                "IndividualAirphone",
+                "MovieScreen",
+                "Infant",
+                "LegRestAvailable",
+                "LegSpace",
+                "MedicallyOkayForTravel",
+                "NearGalley",
+                "NearLavatory",
+                "NoSeatBar",
+                "NoSeatCloset",
+                "NoSmoking",
+                "NotForInfant",
+                "NotForUnaccompaniedMinor",
+                "NotForChildren",
+                "OverWing",
+                "Paid",
+                "Premium",
+                "PetInCabinOrSeat",
+                "Preferred",
+                "RearFacing",
+                "RestrictedRecline",
+                "Restricted",
+                "RightOfAircraft",
+                "LeftOfAircraft",
+                "AdjacentToTable",
+                "AdjacentToBar",
+                "AdjacentToCloset",
+                "AdjacentToStairsToUpperdeck",
+                "AngledLeft",
+                "AngledRight",
+                "ForwardEndCabin",
+                "Available",
+                "QuietZone",
+                "NotAllowedForMedical",
+                "UpperDeck",
+                "Occupied",
+                "AdultWithInfant",
+                "UnaccompaniedMinor",
+                "BassinetFacility",
+                "HandicappedOrIncappacited",
+                "NoEarphone",
+                "IndividualEarphone",
+                "MovieView",
+                "NoMovieView",
+                "HandleCabinBaggage",
+                "Smoking",
+                "WindowAndAisle",
+                "Window",
+                "WindowSeatWithNoWindow",
+                "BehindGalley",
+                "NoSeat"
+              ],
+              "type": "string"
+            }
+          },
+          "fare": {
+            "$ref": "#/definitions/Fare",
+            "description": "Fare details"
+          }
+        }
+      },
+      "HotelSearchRequest": {
+        "description": "Contains information about the search criteria.",
+        "type": "object",
+        "properties": {
+          "geoCode": {
+            "$ref": "#/definitions/GeoCode",
+            "description": "Unique geographic coordinates, latitude and longitude, of the location to be used for search operation."
+          },
+          "radius": {
+            "$ref": "#/definitions/Radius"
+          },
+          "checkIn": {
+            "description": "Contains information about the date when the guest wants to check in. *Format : YYYY-MM-DD*",
+            "type": "string"
+          },
+          "checkOut": {
+            "description": "Contains information about the date when the guest wants to check out. *Format: YYYY-MM-DD*",
+            "type": "string"
+          },
+          "roomOccupancies": {
+            "description": "Contains the list of room information for the search, including the type of guests, number of guests for each guest type, and the age of each child guest.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/RoomOccupancy"
+            }
+          },
+          "hotelIds": {
+            "description": "List of tavisca hotel Ids for each hotel that the user wants to search. The API returns only the list of hotels that matches these Ids. The PropertyId can be obtained from previous searches.",
+            "type": "array",
+            "items": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "searchId": {
+            "description": "Unique id for this search.",
+            "type": "string"
+          },
+          "userType": {
+            "description": "User type is mainly used for markup calculation.",
+            "type": "string"
+          },
+          "userCountryCode": {
+            "description": "User country code can be used in markups and fee calculation.",
+            "type": "string"
+          },
+          "paginationInfo": {
+            "$ref": "#/definitions/Paging",
+            "description": "Pagination information."
+          }
+        }
+      },
+      "Radius": {
+        "description": "Distance from the center point that you want to consider in the search area",
+        "type": "object",
+        "properties": {
+          "value": {
+            "format": "float",
+            "type": "number"
+          },
+          "unit": {
+            "enum": [
+              "Mi",
+              "Km"
+            ],
+            "type": "string"
+          }
+        }
+      },
+      "RoomOccupancy": {
+        "type": "object",
+        "properties": {
+          "adults": {
+            "format": "int32",
+            "description": "Provides information related to no of adults.",
+            "type": "integer"
+          },
+          "children": {
+            "format": "int32",
+            "description": "Provide information related to no of children.",
+            "type": "integer"
+          },
+          "childAges": {
+            "description": "Provide information related to childAges.",
+            "type": "array",
+            "items": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "refId": {
+            "format": "int32",
+            "description": "Id used for to map rooms.",
+            "type": "integer"
+          }
+        }
+      },
+      "HotelSearchResponse": {
+        "type": "object",
+        "properties": {
+          "itineraries": {
+            "description": "Contains list of hotel inventories in the requested location or list of inventories on the basis of requested hotel id's.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/HotelItinerary"
+            }
+          },
+          "roomOccupancies": {
+            "description": "Contains information of requested occupancies.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/RoomOccupancy"
+            }
+          },
+          "searchId": {
+            "description": "Unique ID for this search request. This ID can be used in other requests.",
+            "type": "string"
+          },
+          "currencyCode": {
+            "description": "Currency code on which price return.",
+            "type": "string"
+          },
+          "paging": {
+            "$ref": "#/definitions/Paging",
+            "description": "Pagination"
+          },
+          "status": {
+            "$ref": "#/definitions/Status",
+            "description": "Status of the API call."
+          }
+        }
+      },
+      "HotelItinerary": {
+        "description": "Contains information about the hotel inventory item.",
+        "type": "object",
+        "properties": {
+          "hotelId": {
+            "description": "Unique ID that refers to the tavisca property ID for the hotel inventory.",
+            "type": "string"
+          },
+          "chainCode": {
+            "description": "Hotel chain code to which hotel belongs",
+            "type": "string"
+          },
+          "chainName": {
+            "description": "Hotel chain name to which hotel belongs",
+            "type": "string"
+          },
+          "hotelName": {
+            "description": "Name of the hotel.",
+            "type": "string"
+          },
+          "hotelAddress": {
+            "$ref": "#/definitions/Address",
+            "description": "Address of the hotel."
+          },
+          "geoCode": {
+            "$ref": "#/definitions/GeoCode"
+          },
+          "description": {
+            "description": "Description for the hotel",
+            "type": "string"
+          },
+          "phoneNumber": {
+            "description": "Hotel phone number",
+            "type": "string"
+          },
+          "rating": {
+            "format": "int32",
+            "description": "Hotel star rating. Valid Values : 1 to 5.",
+            "type": "integer"
+          },
+          "amenities": {
+            "description": "List of amenities available, such as Internet or Fitness Facility.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Amenity"
+            }
+          },
+          "heroImageUrl": {
+            "description": "Hotel image",
+            "type": "string"
+          },
+          "images": {
+            "description": "Contains the list of URLs that contain the photographs of the hotel.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Image"
+            }
+          },
+          "stayDuration": {
+            "$ref": "#/definitions/StayDuration",
+            "description": "Hotel Stay duration"
+          },
+          "reviews": {
+            "description": "Review Summary For the hotel",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Review"
+            }
+          },
+          "roomOptions": {
+            "description": "List of available rooms",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/RoomOption"
+            }
+          },
+          "source": {
+            "$ref": "#/definitions/ItinerarySource",
+            "description": "Contains information about the hotel supplier who is the source for the hotel inventory."
+          },
+          "id": {
+            "format": "int32",
+            "description": "Unique ID for the inventory item.",
+            "type": "integer"
+          }
+        }
+      },
+      "Amenity": {
+        "description": "Information about each amenity that is returned for the hotel or the room.",
+        "type": "object",
+        "properties": {
+          "code": {
+            "description": "Indicates whether an amenity is applicable for the hotel or the room. For example, a Television will have the Type as Room or a Spa will have the Type as Hotel.",
+            "type": "string"
+          },
+          "text": {
+            "description": "Description of the amenity specified in the Type parameter. For example, if the amenity type is a Television, the description can be flat-panel, 50-inch, HD TV.",
+            "type": "string"
+          }
+        }
+      },
+      "StayDuration": {
+        "description": "Duration when the guest wants to stay in the hotel.",
+        "type": "object",
+        "properties": {
+          "start": {
+            "description": "The start date and time of the duration when a guest wants to stay in the room. In most cases, this information is the same as the check-in information.",
+            "type": "string"
+          },
+          "end": {
+            "description": "The end date and time of the duration when a guest wants to stay in the room. In most cases, this information is the same as the check-out information.",
+            "type": "string"
+          }
+        }
+      },
+      "Review": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "string"
+          },
+          "count": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "source": {
+            "$ref": "#/definitions/ReviewSource"
+          }
+        }
+      },
+      "RoomOption": {
+        "description": "Contain information about hotel room",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique Room Id in hotel. This field value will be used in **Price API** as a **optionId**.",
+            "type": "string"
+          },
+          "code": {
+            "description": "Code for this room.",
+            "type": "string"
+          },
+          "name": {
+            "description": "Name of the room.",
+            "type": "string"
+          },
+          "description": {
+            "description": "Description of room.",
+            "type": "string"
+          },
+          "roomLeft": {
+            "format": "int32",
+            "description": "Indicates the number of rooms available for this room type. Note that this room count will return only the number of rooms available for the same room type.",
+            "type": "integer"
+          },
+          "bedDetails": {
+            "description": "Contains the list of information about the beds available in the room.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/BedDetail"
+            }
+          },
+          "maxOccupancy": {
+            "format": "int32",
+            "description": "Indicates the maximum number of guests that can stay in the room. If this field returns 0, this means that the hotel room can accommodate the number of guests/occupancy that was requested.",
+            "type": "integer"
+          },
+          "roomRate": {
+            "$ref": "#/definitions/RoomRate",
+            "description": "Contains the room rate details, such as the per room rate component breakup, board basis, offers, or discounts"
+          },
+          "source": {
+            "$ref": "#/definitions/ItinerarySource",
+            "description": "Contains information about the hotel supplier who is the source for the hotel inventory."
+          }
+        }
+      },
+      "ReviewSource": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          }
+        }
+      },
+      "BedDetail": {
+        "description": "Room Bed details",
+        "type": "object",
+        "properties": {
+          "bedType": {
+            "description": "Indicates the bed type, such as a king, queen, double, or bunk bed.",
+            "type": "string"
+          },
+          "desc": {
+            "description": "Description of bed type",
+            "type": "string"
+          }
+        }
+      },
+      "RoomRate": {
+        "description": "Contains the room rate details, such as the per room rate component breakup, board basis, offers, or discounts",
+        "type": "object",
+        "properties": {
+          "occupancyRefId": {
+            "format": "int32",
+            "description": "Unique reference ID for the occupancy.",
+            "type": "integer"
+          },
+          "rateDescription": {
+            "description": "Description of rate",
+            "type": "string"
+          },
+          "roomFare": {
+            "$ref": "#/definitions/Fare",
+            "description": "Room Fare"
+          },
+          "dailyRoomRate": {
+            "description": "Contains the list of rates applicable for a specific time period.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/DailyRoomRate"
+            }
+          },
+          "rateIndicator": {
+            "$ref": "#/definitions/RateIndicator"
+          },
+          "hotelPolicies": {
+            "description": "Contains the list of applicable hotel policies in accordance with the room rate.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Policy"
+            }
+          },
+          "hotelCancellationPolicies": {
+            "$ref": "#/definitions/CancellationPolicy",
+            "description": "Contains the list of applicable cancellation penalties, including information such as the window determining the penalty period and the penalties incurred for the cancellation."
+          },
+          "offers": {
+            "description": "Contain the list of applicable offer about supplier-specific promotional offers, such as a discountOffer, percentageDiscountOffer, or stayOffer.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Offer"
+            }
+          }
+        }
+      },
+      "DailyRoomRate": {
+        "description": "Rates applicable for a specific time period.",
+        "type": "object",
+        "properties": {
+          "date": {
+            "description": "Date when the rate is applicable.",
+            "type": "string"
+          },
+          "amount": {
+            "format": "double",
+            "description": "Applicable rate for this date.",
+            "type": "number"
+          },
+          "taxIncluded": {
+            "description": "Indicates whether taxes are included in the amount value.",
+            "type": "boolean"
+          },
+          "discount": {
+            "format": "double",
+            "description": "Applicable discount for this date",
+            "type": "number"
+          }
+        }
+      },
+      "RateIndicator": {
+        "description": "Contain more details about rate",
+        "type": "object",
+        "properties": {
+          "isguaranteeRequired": {
+            "description": "If this field is set to true, a guarantee is required to confirm the booking in case of postpaid bookings. A guarantee is typically in the form of a credit card. The card is not charged immediately, but it is held as a guarantee in case of no-show, where the cancellation penalty might be applicable.",
+            "type": "boolean"
+          },
+          "isDepositRequired": {
+            "description": "If this field is set to true, some amount of deposit is required to confirm the booking in case of postpaid bookings. This deposit amount is typically charged to the credit card provided at the time of booking.",
+            "type": "boolean"
+          },
+          "isRefundable": {
+            "type": "boolean"
+          },
+          "isPrepaid": {
+            "description": "Indicates whether the payment for the hotel inventory is prepaid. This means that the guest can pay for the room at the time of booking.",
+            "type": "boolean"
+          },
+          "fareType": {
+            "description": "Fare type",
+            "type": "string"
+          }
+        }
+      },
+      "Policy": {
+        "description": "Contain information about policy with rate",
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Policy type as received from the supplier.",
+            "type": "string"
+          },
+          "description": {
+            "description": "Description of the policy.",
+            "type": "string"
+          }
+        }
+      },
+      "Offer": {
+        "description": "Contains details about supplier-specific promotional offers, such as a discountOffer, percentageDiscountOffer, or stayOffer. This amount or offer is already considered in the baseFare.",
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Type of offer.",
+            "type": "string"
+          },
+          "text": {
+            "description": "Text description of the promotional offer.",
+            "type": "string"
+          }
+        }
+      },
+      "RoomAvailResponse": {
+        "type": "object",
+        "properties": {
+          "currencyCode": {
+            "description": "Currency code on which price return.",
+            "type": "string"
+          },
+          "itinerary": {
+            "$ref": "#/definitions/HotelItinerary",
+            "description": "Contains information of inventory."
+          },
+          "searchId": {
+            "description": "Unique ID for this search request. This ID can be used in other requests.",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/definitions/Status",
+            "description": "Status of the API call."
+          }
+        }
+      },
+      "HotelItineraryRequest": {
+        "description": "Hotel inventory Request",
+        "type": "object",
+        "properties": {
+          "checkIn": {
+            "description": "Contains information about the date when the guest wants to check in. *Format : YYYY-MM-DD*",
+            "type": "string"
+          },
+          "checkOut": {
+            "description": "Contains information about the date when the guest wants to check out. *Format: YYYY-MM-DD*",
+            "type": "string"
+          },
+          "roomOccupancies": {
+            "description": "Contains the list of room information for the search, including the type of guests, number of guests for each guest type, and the age of each guest.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/RoomOccupancy"
+            }
+          },
+          "hotelId": {
+            "format": "int32",
+            "description": "Hotel id for which user wants to search.",
+            "type": "integer"
+          }
+        }
+      },
+      "PriceRequest": {
+        "description": "Price Request",
+        "type": "object",
+        "properties": {
+          "priceProducts": {
+            "description": "Contain information about list of price product details",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/PriceProduct"
+            }
+          },
+          "customerType": {
+            "description": "Customer Type\r\nmarkup can be calculated according to customer type.",
+            "type": "string"
+          }
+        }
+      },
+      "PriceProduct": {
+        "description": "Price Product Details",
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Product Type",
+            "enum": [
+              "Hotel",
+              "Flight",
+              "Activity",
+              "Car"
+            ],
+            "type": "string"
+          },
+          "id": {
+            "description": "Product id from search response that is to be priced.",
+            "type": "string"
+          },
+          "searchId": {
+            "description": "Search id from search response",
+            "type": "string"
+          },
+          "optionId": {
+            "description": "Sub product ID. In case of hotel, this field contain room reference id, for activity, contain refId of activity option.",
+            "type": "string"
+          },
+          "priceProductType": {
+            "type": "string"
+          }
+        },
+        "discriminator": "type"
+      },
+      "PriceResponse": {
+        "description": "Price Response",
+        "type": "object",
+        "properties": {
+          "tripProducts": {
+            "description": "Contain information about priced product list",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/TripProduct"
+            }
+          },
+          "status": {
+            "$ref": "#/definitions/Status",
+            "description": "Status of the API call."
+          }
+        }
+      },
+      "TripProduct": {
+        "description": "Trip product",
+        "type": "object",
+        "properties": {
+          "productId": {
+            "description": "Unique Product Id",
+            "type": "string"
+          },
+          "tripStatus": {
+            "description": "Booking status of product. This field will be available in booking response.",
+            "enum": [
+              "Planned",
+              "Purchased",
+              "Canceled",
+              "Partial"
+            ],
+            "type": "string"
+          },
+          "additionalParams": {
+            "description": "List of additional attributes that are not defined in the existing list of TripProduct parameters.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/KeyValue"
+            }
+          },
+          "passengerSegmentDetails": {
+            "description": "Contains the list of information for each person who will use or avail the inventory item.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/PassengerSegment"
+            }
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "discriminator": "type"
+      },
+      "PassengerSegment": {
+        "description": "Contains information for the person who will use or avail the inventory item.",
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "int32",
+            "description": "Unique ID for the person.",
+            "type": "integer"
+          },
+          "confirmationNumber": {
+            "description": "Unique number that is generated after the inventory item is successfully booked for the person.",
+            "type": "string"
+          },
+          "vendorRefNumber": {
+            "description": "Unique number that the supplier of the inventory item provided for the person after the inventory item is successfully booked.",
+            "type": "string"
+          },
+          "cancellationNumber": {
+            "description": "Unique number that is generated after the inventory item is successfully canceled for the person.",
+            "type": "string"
+          }
+        }
+      },
+      "BookingRequest": {
+        "description": "Contains information about the inventories that are to be booked, information about each person for whom the inventory is to be booked, and information about the payment methods.",
+        "type": "object",
+        "properties": {
+          "bookProducts": {
+            "description": "Contains information about each product that is to be booked.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/BookProduct"
+            }
+          },
+          "passengers": {
+            "description": "Contains the list of information about each person for whom the order is to be booked.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Passenger"
+            }
+          },
+          "payments": {
+            "description": "Contains information about the payments made for the order.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Payment"
+            }
+          },
+          "agencyInfo": {
+            "$ref": "#/definitions/User",
+            "description": "Contain information about the agency under which booking is made."
+          },
+          "owner": {
+            "$ref": "#/definitions/User",
+            "description": "Contain information about the user who is making the booking. This user can be an agent, the primary guest, or another person who is doing the booking on behalf of the primary guest."
+          },
+          "customFields": {
+            "$ref": "#/definitions/CustomFields",
+            "description": "Contains custom fields that can be used for any business-related purpose, such as PNR Finishing."
+          }
+        }
+      },
+      "BookProduct": {
+        "description": "Contains information about the product that is to be booked.",
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Product Type",
+            "enum": [
+              "Hotel",
+              "Flight",
+              "Activity",
+              "Car"
+            ],
+            "type": "string"
+          },
+          "searchId": {
+            "description": "Unique search id for product from search response.",
+            "type": "string"
+          },
+          "pricedProductId": {
+            "description": "Contain product reference id that is to be booked. *PriceProductId* will received in **Price API** reponse.",
+            "type": "string"
+          },
+          "paymentBreakups": {
+            "description": "Contains the list of information for each payment method used to book the inventory item. For example, a total payment of $500 was made out of which $300 was paid by using a credit card and $200 was paid by redeeming points. In this scenario, there are two payment IDs, one for the credit card payment and the other for the points redeemed.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/PaymentBreakup"
+            }
+          },
+          "bookProductType": {
+            "type": "string"
+          }
+        },
+        "discriminator": "bookProductType"
+      },
+      "Passenger": {
+        "description": "Contains information about the person who uses or avails the inventory item.",
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "int32",
+            "description": "Unique ID for the passenger",
+            "type": "integer"
+          },
+          "type": {
+            "description": "Category to which the person belongs, such as adult, infant, or child.",
+            "enum": [
+              "Adult",
+              "Child",
+              "Infant",
+              "Senior"
+            ],
+            "type": "string"
+          },
+          "name": {
+            "$ref": "#/definitions/Name",
+            "description": "Person name details"
+          },
+          "email": {
+            "description": "Email address of person",
+            "type": "string"
+          },
+          "phoneNumber": {
+            "description": "Phone number of person",
+            "type": "string"
+          },
+          "gender": {
+            "description": "Gender of person",
+            "enum": [
+              "Male",
+              "Female"
+            ],
+            "type": "string"
+          },
+          "dateOfBirth": {
+            "description": "Date of birth of person. Format - YYYY-MM-DD",
+            "type": "string"
+          },
+          "memberships": {
+            "description": "Contains the list of memberships that the person holds. Memberships are provided by various organizations to gain loyalty of a customer.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Membership"
+            }
+          },
+          "passportInfo": {
+            "$ref": "#/definitions/Passport",
+            "description": "Contains passport information of the person."
+          },
+          "knownTravelerNumber": {
+            "description": "Contains known traveler number of the person.",
+            "type": "string"
+          },
+          "redressNumber": {
+            "description": "Contains redress number of the person.",
+            "type": "string"
+          }
+        }
+      },
+      "Payment": {
+        "description": "Contains information about the payments that are made for booking the order.",
+        "type": "object",
+        "properties": {
+          "paymentId": {
+            "format": "int32",
+            "description": "Unique id of payment in list. Valid Values - 1, 2, 3, 4",
+            "type": "integer"
+          },
+          "amount": {
+            "format": "double",
+            "description": "Charge Amount",
+            "type": "number"
+          },
+          "paymentType": {
+            "description": "Payment Method",
+            "enum": [
+              "Cash",
+              "Deposit",
+              "CreditCard",
+              "PointPayment"
+            ],
+            "type": "string"
+          },
+          "billingAddress": {
+            "$ref": "#/definitions/Address",
+            "description": "Billing Address"
+          },
+          "phoneNumber": {
+            "description": "Phone number",
+            "type": "string"
+          }
+        },
+        "discriminator": "paymentType"
+      },
+      "User": {
+        "description": "User or Agency details",
+        "type": "object",
+        "properties": {
+          "id": {
+            "format": "int64",
+            "description": "Unique user/agency id",
+            "type": "integer"
+          },
+          "userName": {
+            "description": "User name",
+            "type": "string"
+          },
+          "name": {
+            "$ref": "#/definitions/Name",
+            "description": "User first, middle and last name."
+          },
+          "email": {
+            "description": "Eamil addresss",
+            "type": "string"
+          },
+          "refId": {
+            "format": "int64",
+            "description": "Optional. Unique reference id for third party system.",
+            "type": "integer"
+          }
+        }
+      },
+      "CustomFields": {
+        "description": "Contains custom fields that can be used for any business-related purpose, such as PNR Finishing.",
+        "type": "object",
+        "properties": {
+          "field1": {
+            "type": "string"
+          },
+          "field2": {
+            "type": "string"
+          },
+          "field3": {
+            "type": "string"
+          },
+          "field4": {
+            "type": "string"
+          },
+          "field5": {
+            "type": "string"
+          }
+        }
+      },
+      "PaymentBreakup": {
+        "description": "Contains information about the payment method used to book the inventory item.",
+        "type": "object",
+        "properties": {
+          "paymentId": {
+            "format": "int32",
+            "description": "Unique ID for the payment method used to book the inventory item.",
+            "type": "integer"
+          },
+          "amount": {
+            "format": "double",
+            "description": "Contains information about the amount paid for the inventory item. Example, 100",
+            "type": "number"
+          },
+          "passengerId": {
+            "format": "int32",
+            "description": "Unique passenger IDs for whom the inventory item is to be booked.",
+            "type": "integer"
+          }
+        }
+      },
+      "Name": {
+        "description": "Name details",
+        "type": "object",
+        "properties": {
+          "title": {
+            "description": "Title of the person, such as Mr., Ms. or Mrs.",
+            "type": "string"
+          },
+          "firstName": {
+            "description": "First name of the person",
+            "type": "string"
+          },
+          "middleName": {
+            "description": "Middle name of the person",
+            "type": "string"
+          },
+          "lastName": {
+            "description": "Last name of person",
+            "type": "string"
+          }
+        }
+      },
+      "Membership": {
+        "description": "Contains information about the membership that the person holds.",
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "Name of the organization that provides the membership. For example, ACME Hotels, ACME Airways, or ACME Car Rentals",
+            "type": "string"
+          },
+          "productType": {
+            "description": "Product type for membership",
+            "enum": [
+              "Hotel",
+              "Flight",
+              "Activity",
+              "Car"
+            ],
+            "type": "string"
+          },
+          "number": {
+            "description": "Membership number",
+            "type": "string"
+          },
+          "vendorCode": {
+            "description": "Code for the organization that provides the membership.",
+            "type": "string"
+          },
+          "marketingAirlineCode": {
+            "description": "For flight product, Marketing Airline Code",
+            "type": "string"
+          }
+        }
+      },
+      "Passport": {
+        "description": "Contains passport information of the person.",
+        "type": "object",
+        "properties": {
+          "passportNumber": {
+            "description": "Passport number of the passport user/traveller/person has.",
+            "type": "string"
+          },
+          "placeOfIssue": {
+            "description": "Place of issue",
+            "type": "string"
+          },
+          "dateOfIssue": {
+            "description": "Date when passport has been issued.",
+            "type": "string"
+          },
+          "expirationDate": {
+            "description": "Expiry date of passport.",
+            "type": "string"
+          },
+          "nationality": {
+            "description": "Nationality country of the user/traveller/person.",
+            "type": "string"
+          }
+        }
+      },
+      "BookingResponse": {
+        "description": "Contains information about the booked order.",
+        "type": "object",
+        "properties": {
+          "tripId": {
+            "description": "Trip confirmation number that is generated for the order after the order is booked. This number is used for all future communications, such as for retrieving order or modifying the order.",
+            "type": "string"
+          },
+          "bookingStatus": {
+            "description": "Indicates the booking status of the order, such as pending, planned, or purchased.",
+            "enum": [
+              "Planned",
+              "Purchased",
+              "Canceled",
+              "Partial"
+            ],
+            "type": "string"
+          },
+          "tripProducts": {
+            "description": "Contains the list of product items that were booked.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/TripProduct"
+            }
+          },
+          "payments": {
+            "description": "Contains information about the payments made for the order.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Payment"
+            }
+          },
+          "agencyInfo": {
+            "$ref": "#/definitions/User",
+            "description": "Contain information about the agency under which booking is made."
+          },
+          "owner": {
+            "$ref": "#/definitions/User",
+            "description": "Contain information about the user who is making the booking. This user can be an agent, the primary guest, or another person who is doing the booking on behalf of the primary guest."
+          },
+          "passengers": {
+            "description": "Contains the list of information about each person for whom the order is to be booked.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Passenger"
+            }
+          },
+          "chargeTransactions": {
+            "description": "Contains the list of information about transactions happened for each payment provided while booking.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/ChargeTransaction"
+            }
+          },
+          "status": {
+            "$ref": "#/definitions/Status",
+            "description": "Status of the API call."
+          }
+        }
+      },
+      "ChargeTransaction": {
+        "description": "Contains the information about transaction happened for particular payment provided while booking.",
+        "type": "object",
+        "properties": {
+          "paymentId": {
+            "format": "int32",
+            "description": "Contains unique id of the payment.",
+            "type": "integer"
+          },
+          "amount": {
+            "format": "double",
+            "description": "Contains transaction amount.",
+            "type": "number"
+          },
+          "currency": {
+            "description": "Contains charged currency.",
+            "type": "string"
+          },
+          "transactionId": {
+            "description": "Contains id of the transaction.",
+            "type": "string"
+          },
+          "providerTransactionId": {
+            "description": "Contains id of the transaction provided by the provider.",
+            "type": "string"
+          },
+          "status": {
+            "description": "Contains charged status.",
+            "type": "string"
+          }
+        }
+      },
+      "RetrieveResponse": {
+        "description": "Retrieve trip response",
+        "type": "object",
+        "properties": {
+          "tripId": {
+            "description": "Trip confirmation number that is generated for the order after the order is booked. This number is used for all future communications, such as for retrieving order or modifying the order.",
+            "type": "string"
+          },
+          "bookingStatus": {
+            "description": "Indicates the booking status of the order, such as pending, planned, or purchased.",
+            "enum": [
+              "Planned",
+              "Purchased",
+              "Canceled",
+              "Partial"
+            ],
+            "type": "string"
+          },
+          "tripProducts": {
+            "description": "Contains the list of product items that were booked.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/TripProduct"
+            }
+          },
+          "payments": {
+            "description": "Contains information about the payments made for the order.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Payment"
+            }
+          },
+          "agencyInfo": {
+            "$ref": "#/definitions/User",
+            "description": "Contain information about the agency under which booking is made."
+          },
+          "owner": {
+            "$ref": "#/definitions/User",
+            "description": "Contain information about the user who is making the booking. This user can be an agent, the primary guest, or another person who is doing the booking on behalf of the primary guest."
+          },
+          "passengers": {
+            "description": "Contains the list of information about each person for whom the order is to be booked.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Passenger"
+            }
+          },
+          "chargeTransactions": {
+            "description": "Contains the list of information about transactions happened for each payment provided while booking.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/ChargeTransaction"
+            }
+          },
+          "status": {
+            "$ref": "#/definitions/Status",
+            "description": "Status of the API call."
+          }
+        }
+      },
+      "CancellationRequest": {
+        "description": "Contains information about the trip id and product ids to be cancelled.",
+        "type": "object",
+        "properties": {
+          "productIds": {
+            "description": "Product Ids are returned by booking response.Product ids are used for cancelling bookings within given trip id.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "ownerId": {
+            "format": "int64",
+            "description": "Unique user/agency id supplied at the time of booking.",
+            "type": "integer"
+          },
+          "tripId": {
+            "description": "Trip confirmation number that is generated for the order after the order is booked.",
+            "type": "string"
+          }
+        }
+      },
+      "CancellationResponse": {
+        "description": "Contains latest information about the products after cancellation.",
+        "type": "object",
+        "properties": {
+          "productCancellationDetails": {
+            "description": "Contain information about latest product status after cancellation operation is performed. Status informtion is returned only for product ids requested in the cancellation request.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/ProductStatus"
+            }
+          },
+          "status": {
+            "$ref": "#/definitions/Status",
+            "description": "Status of the API call."
+          }
+        }
+      },
+      "ProductStatus": {
+        "description": "Contains information about product id and it's current status.",
+        "type": "object",
+        "properties": {
+          "productId": {
+            "description": "Product id provided in the cancellation request.",
+            "type": "string"
+          },
+          "tripStatus": {
+            "description": "Latest booking status of the product. Successfully canceled product has \"Canceled\" status.",
+            "enum": [
+              "Planned",
+              "Purchased",
+              "Canceled",
+              "Partial"
+            ],
+            "type": "string"
+          }
+        }
+      },
+      "PostBookingSeatMapResponse": {
+        "description": "",
+        "type": "object",
+        "properties": {
+          "seatMap": {
+            "$ref": "#/definitions/SeatMap",
+            "description": "Contains information about the seat map of the flight."
+          },
+          "status": {
+            "$ref": "#/definitions/Status",
+            "description": "Status of the API call."
+          }
+        }
+      },
+      "AirSeatsAssignRequest": {
+        "description": "Seat Assignment Request.",
+        "type": "object",
+        "properties": {
+          "tripId": {
+            "description": "Trip confirmation number that is generated for the order after the order is booked. It is used to retrive TripFolder.",
+            "type": "string"
+          },
+          "tripProductId": {
+            "description": "Target trip product id on which seat assignment is to be performed.",
+            "type": "string"
+          },
+          "passengerSegmentInfoList": {
+            "description": "Contains passenger seat information.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/PassesngerSegmentSeatInfo"
+            }
+          }
+        }
+      },
+      "PassesngerSegmentSeatInfo": {
+        "type": "object",
+        "properties": {
+          "segmentKey": {
+            "description": "reference id for which Seat Assignment is to be performed.",
+            "type": "string"
+          },
+          "passengerId": {
+            "format": "int32",
+            "description": "unique passenger Id",
+            "type": "integer"
+          },
+          "seatNumber": {
+            "description": "Seat Number",
+            "type": "string"
+          }
+        }
+      },
+      "AirSeatsAssignResponse": {
+        "description": "Seat Assignment Response.",
+        "type": "object",
+        "properties": {
+          "tripId": {
+            "description": "Trip confirmation number that is generated for the order after the order is booked. This number is used for all future communications, such as for retrieving order or modifying the order.",
+            "type": "string"
+          },
+          "bookingStatus": {
+            "description": "Indicates the booking status of the order, such as pending, planned, or purchased.",
+            "enum": [
+              "Planned",
+              "Purchased",
+              "Canceled",
+              "Partial"
+            ],
+            "type": "string"
+          },
+          "tripProducts": {
+            "description": "Contains the list of product items that were booked.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/TripProduct"
+            }
+          },
+          "payments": {
+            "description": "Contains information about the payments made for the order.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Payment"
+            }
+          },
+          "agencyInfo": {
+            "$ref": "#/definitions/User",
+            "description": "Contain information about the agency under which booking is made."
+          },
+          "owner": {
+            "$ref": "#/definitions/User",
+            "description": "Contain information about the user who is making the booking. This user can be an agent, the primary guest, or another person who is doing the booking on behalf of the primary guest."
+          },
+          "passengers": {
+            "description": "Contains the list of information about each person for whom the order is to be booked.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/Passenger"
+            }
+          },
+          "chargeTransactions": {
+            "description": "Contains the list of information about transactions happened for each payment provided while booking.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/ChargeTransaction"
+            }
+          },
+          "status": {
+            "$ref": "#/definitions/Status",
+            "description": "Status of the API call."
+          }
+        }
+      },
+      "FlightProduct": {
+        "description": "Flight Trip Product",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/definitions/TripProduct"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "searchCriteria": {
+                "$ref": "#/definitions/FlightSearchRequest",
+                "description": "Contains information about the search request."
+              },
+              "flightItinerary": {
+                "$ref": "#/definitions/FlightItinerary",
+                "description": "Contain information about flight inventory"
+              },
+              "flightSegments": {
+                "description": "Contain information about flight segments details",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/FlightSegment"
+                }
+              },
+              "productId": {
+                "description": "Unique Product Id",
+                "type": "string"
+              },
+              "tripStatus": {
+                "description": "Booking status of product. This field will be available in booking response.",
+                "enum": [
+                  "Planned",
+                  "Purchased",
+                  "Canceled",
+                  "Partial"
+                ],
+                "type": "string"
+              },
+              "additionalParams": {
+                "description": "List of additional attributes that are not defined in the existing list of TripProduct parameters.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/KeyValue"
+                }
+              },
+              "passengerSegmentDetails": {
+                "description": "Contains the list of information for each person who will use or avail the inventory item.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/PassengerSegment"
+                }
+              }
+            }
+          }
+        ],
+        "properties": {}
+      },
+      "HotelProduct": {
+        "description": "Hotel Trip Product",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/definitions/TripProduct"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "searchCriteria": {
+                "$ref": "#/definitions/HotelSearchRequest",
+                "description": "Contains information about the search request."
+              },
+              "hotelItinerary": {
+                "$ref": "#/definitions/HotelItinerary",
+                "description": "Contains information about the inventory item."
+              },
+              "productId": {
+                "description": "Unique Product Id",
+                "type": "string"
+              },
+              "tripStatus": {
+                "description": "Booking status of product. This field will be available in booking response.",
+                "enum": [
+                  "Planned",
+                  "Purchased",
+                  "Canceled",
+                  "Partial"
+                ],
+                "type": "string"
+              },
+              "additionalParams": {
+                "description": "List of additional attributes that are not defined in the existing list of TripProduct parameters.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/KeyValue"
+                }
+              },
+              "passengerSegmentDetails": {
+                "description": "Contains the list of information for each person who will use or avail the inventory item.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/PassengerSegment"
+                }
+              }
+            }
+          }
+        ],
+        "properties": {}
+      },
+      "CarProduct": {
+        "description": "Car trip product",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/definitions/TripProduct"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "searchCriteria": {
+                "$ref": "#/definitions/CarSearchRequest",
+                "description": "Contains information about the search request."
+              },
+              "carItinerary": {
+                "$ref": "#/definitions/CarItinerary",
+                "description": "Contain information about car inventory"
+              },
+              "productId": {
+                "description": "Unique Product Id",
+                "type": "string"
+              },
+              "tripStatus": {
+                "description": "Booking status of product. This field will be available in booking response.",
+                "enum": [
+                  "Planned",
+                  "Purchased",
+                  "Canceled",
+                  "Partial"
+                ],
+                "type": "string"
+              },
+              "additionalParams": {
+                "description": "List of additional attributes that are not defined in the existing list of TripProduct parameters.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/KeyValue"
+                }
+              },
+              "passengerSegmentDetails": {
+                "description": "Contains the list of information for each person who will use or avail the inventory item.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/PassengerSegment"
+                }
+              }
+            }
+          }
+        ],
+        "properties": {}
+      },
+      "ActivityProduct": {
+        "description": "Activity Tirp Product",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/definitions/TripProduct"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "searchCriteria": {
+                "$ref": "#/definitions/ActivitySearchRequest",
+                "description": "Contains information about the search request."
+              },
+              "activityItinerary": {
+                "$ref": "#/definitions/ActivityItinerary",
+                "description": "Contain information about activity inventory"
+              },
+              "productId": {
+                "description": "Unique Product Id",
+                "type": "string"
+              },
+              "tripStatus": {
+                "description": "Booking status of product. This field will be available in booking response.",
+                "enum": [
+                  "Planned",
+                  "Purchased",
+                  "Canceled",
+                  "Partial"
+                ],
+                "type": "string"
+              },
+              "additionalParams": {
+                "description": "List of additional attributes that are not defined in the existing list of TripProduct parameters.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/KeyValue"
+                }
+              },
+              "passengerSegmentDetails": {
+                "description": "Contains the list of information for each person who will use or avail the inventory item.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/PassengerSegment"
+                }
+              }
+            }
+          }
+        ],
+        "properties": {}
+      },
+      "CreditCard": {
+        "description": "Contains information about the card that is being used to make the payment for the booking.",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/definitions/Payment"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "number": {
+                "description": "Credit card number to be used for the payment.",
+                "type": "string"
+              },
+              "nameOnCard": {
+                "description": "Name on the credit card that is being used for the payment.",
+                "type": "string"
+              },
+              "securityCode": {
+                "description": "Three or four-digit card verification value (CVV) or card security code (CSC).",
+                "type": "string"
+              },
+              "vendorCode": {
+                "description": "Card issuer. Example - AX, BC, CA, VI, JC, DS, etc",
+                "type": "string"
+              },
+              "expiryMonth": {
+                "format": "int32",
+                "description": "Contains the credit card expiration month. Valid values : 1 to 12",
+                "type": "integer"
+              },
+              "expiryYear": {
+                "format": "int32",
+                "description": "Contains the credit card expiration year. Example : 2018, 2019",
+                "type": "integer"
+              },
+              "paymentType": {
+                "description": "Payment method",
+                "enum": [
+                  "Cash",
+                  "Deposit",
+                  "CreditCard",
+                  "PointPayment"
+                ],
+                "type": "string"
+              },
+              "paymentId": {
+                "format": "int32",
+                "description": "Unique id of payment in list. Valid Values - 1, 2, 3, 4",
+                "type": "integer"
+              },
+              "amount": {
+                "format": "double",
+                "description": "Charge Amount",
+                "type": "number"
+              },
+              "billingAddress": {
+                "$ref": "#/definitions/Address",
+                "description": "Billing Address"
+              },
+              "phoneNumber": {
+                "description": "Phone number",
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "properties": {}
+      },
+      "Cash": {
+        "description": "Cash Payment",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/definitions/Payment"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "paymentType": {
+                "enum": [
+                  "Cash",
+                  "Deposit",
+                  "CreditCard",
+                  "PointPayment"
+                ],
+                "type": "string"
+              },
+              "paymentId": {
+                "format": "int32",
+                "description": "Unique id of payment in list. Valid Values - 1, 2, 3, 4",
+                "type": "integer"
+              },
+              "amount": {
+                "format": "double",
+                "description": "Charge Amount",
+                "type": "number"
+              },
+              "billingAddress": {
+                "$ref": "#/definitions/Address",
+                "description": "Billing Address"
+              },
+              "phoneNumber": {
+                "description": "Phone number",
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "properties": {}
+      },
+      "Deposit": {
+        "description": "Deposit Payment",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/definitions/Payment"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "paymentType": {
+                "enum": [
+                  "Cash",
+                  "Deposit",
+                  "CreditCard",
+                  "PointPayment"
+                ],
+                "type": "string"
+              },
+              "paymentId": {
+                "format": "int32",
+                "description": "Unique id of payment in list. Valid Values - 1, 2, 3, 4",
+                "type": "integer"
+              },
+              "amount": {
+                "format": "double",
+                "description": "Charge Amount",
+                "type": "number"
+              },
+              "billingAddress": {
+                "$ref": "#/definitions/Address",
+                "description": "Billing Address"
+              },
+              "phoneNumber": {
+                "description": "Phone number",
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "properties": {}
+      },
+      "PointPayment": {
+        "description": "Point Bank Payment",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/definitions/Payment"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "paymentType": {
+                "description": "Payment Type",
+                "enum": [
+                  "Cash",
+                  "Deposit",
+                  "CreditCard",
+                  "PointPayment"
+                ],
+                "type": "string"
+              },
+              "paymentId": {
+                "format": "int32",
+                "description": "Unique id of payment in list. Valid Values - 1, 2, 3, 4",
+                "type": "integer"
+              },
+              "amount": {
+                "format": "double",
+                "description": "Charge Amount",
+                "type": "number"
+              },
+              "billingAddress": {
+                "$ref": "#/definitions/Address",
+                "description": "Billing Address"
+              },
+              "phoneNumber": {
+                "description": "Phone number",
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "properties": {}
+      },
+      "FlightPriceProduct": {
+        "description": "Flight pricing model.",
+        "type": "object",
+        "title": "Flight",
+        "allOf": [
+          {
+            "$ref": "#/definitions/PriceProduct"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "description": "Product Type",
+                "enum": [
+                  "Hotel",
+                  "Flight",
+                  "Activity",
+                  "Car"
+                ],
+                "type": "string"
+              },
+              "id": {
+                "description": "Product id from search response that is to be priced.",
+                "type": "string"
+              },
+              "searchId": {
+                "description": "Search id from search response",
+                "type": "string"
+              },
+              "optionId": {
+                "description": "Sub product ID. In case of hotel, this field contain room reference id, for activity, contain refId of activity option.",
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "properties": {}
+      },
+      "HotelPriceProduct": {
+        "description": "Hotel pricing model.",
+        "type": "object",
+        "title" : "Hotel",
+        "allOf": [
+          {
+            "$ref": "#/definitions/PriceProduct"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "description": "Product Type",
+                "enum": [
+                  "Hotel",
+                  "Flight",
+                  "Activity",
+                  "Car"
+                ],
+                "type": "string"
+              },
+              "id": {
+                "description": "Product id from search response that is to be priced.",
+                "type": "string"
+              },
+              "searchId": {
+                "description": "Search id from search response",
+                "type": "string"
+              },
+              "optionId": {
+                "description": "Sub product ID. In case of hotel, this field contain room reference id, for activity, contain refId of activity option.",
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "properties": {}
+      },
+      "CarPriceProduct": {
+        "description": "Car pricing model.",
+        "type": "object",
+        "title" : "Car",
+        "allOf": [
+          {
+            "$ref": "#/definitions/PriceProduct"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "description": "Product Type",
+                "enum": [
+                  "Hotel",
+                  "Flight",
+                  "Activity",
+                  "Car"
+                ],
+                "type": "string"
+              },
+              "id": {
+                "description": "Product id from search response that is to be priced.",
+                "type": "string"
+              },
+              "searchId": {
+                "description": "Search id from search response",
+                "type": "string"
+              },
+              "optionId": {
+                "description": "Sub product ID. In case of hotel, this field contain room reference id, for activity, contain refId of activity option.",
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "properties": {}
+      },
+      "ActivityPriceProduct": {
+        "description": "Activity pricing model.",
+        "type": "object",
+        "title": "Activity",
+        "allOf": [
+          {
+            "$ref": "#/definitions/PriceProduct"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "selectedOption": {
+                "$ref": "#/definitions/SelectedOption",
+                "description": "Activity option selected for pricing. Details in this field are available in Activity Option api response."
+              },
+              "type": {
+                "description": "Product Type",
+                "enum": [
+                  "Hotel",
+                  "Flight",
+                  "Activity",
+                  "Car"
+                ],
+                "type": "string"
+              },
+              "id": {
+                "description": "Product id from search response that is to be priced.",
+                "type": "string"
+              },
+              "searchId": {
+                "description": "Search id from search response",
+                "type": "string"
+              },
+              "optionId": {
+                "description": "Sub product ID. In case of hotel, this field contain room reference id, for activity, contain refId of activity option.",
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "properties": {}
+      },
+      "SelectedOption": {
+        "description": "Selected activity option",
+        "type": "object",
+        "properties": {
+          "selectedDate": {
+            "description": "Date chosen for selected option.",
+            "type": "string"
+          },
+          "passengers": {
+            "description": "List of passengers chosen for selected option.",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/PassengerCount"
+            }
+          }
+        }
+      },
+      "PassengerCount": {
+        "description": "Passenger information for selected activity option.",
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Type of passenger. This field is available in Activity Option api response.",
+            "type": "string"
+          },
+          "count": {
+            "format": "int32",
+            "description": "Passenger count for chosen type.",
+            "type": "integer"
+          }
+        }
+      },
+      "FlightBookProduct": {
+        "description": "Contains specific information about the flight product that is to be booked.",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/definitions/BookProduct"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "description": "Product Type",
+                "enum": [
+                  "Hotel",
+                  "Flight",
+                  "Activity",
+                  "Car"
+                ],
+                "type": "string"
+              },
+              "searchId": {
+                "description": "Unique search id for product from search response.",
+                "type": "string"
+              },
+              "pricedProductId": {
+                "description": "Contain product reference id that is to be booked. *PriceProductId* will received in **Price API** reponse.",
+                "type": "string"
+              },
+              "paymentBreakups": {
+                "description": "Contains the list of information for each payment method used to book the inventory item. For example, a total payment of $500 was made out of which $300 was paid by using a credit card and $200 was paid by redeeming points. In this scenario, there are two payment IDs, one for the credit card payment and the other for the points redeemed.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/PaymentBreakup"
+                }
+              }
+            }
+          }
+        ],
+        "properties": {}
+      },
+      "HotelBookProduct": {
+        "description": "Contains specific information about the hotel product that is to be booked.",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/definitions/BookProduct"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "description": "Product Type",
+                "enum": [
+                  "Hotel",
+                  "Flight",
+                  "Activity",
+                  "Car"
+                ],
+                "type": "string"
+              },
+              "searchId": {
+                "description": "Unique search id for product from search response.",
+                "type": "string"
+              },
+              "pricedProductId": {
+                "description": "Contain product reference id that is to be booked. *PriceProductId* will received in **Price API** reponse.",
+                "type": "string"
+              },
+              "paymentBreakups": {
+                "description": "Contains the list of information for each payment method used to book the inventory item. For example, a total payment of $500 was made out of which $300 was paid by using a credit card and $200 was paid by redeeming points. In this scenario, there are two payment IDs, one for the credit card payment and the other for the points redeemed.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/PaymentBreakup"
+                }
+              }
+            }
+          }
+        ],
+        "properties": {}
+      },
+      "CarBookProduct": {
+        "description": "Contains specific information about the car product that is to be booked.",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/definitions/BookProduct"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "description": "Product Type",
+                "enum": [
+                  "Hotel",
+                  "Flight",
+                  "Activity",
+                  "Car"
+                ],
+                "type": "string"
+              },
+              "searchId": {
+                "description": "Unique search id for product from search response.",
+                "type": "string"
+              },
+              "pricedProductId": {
+                "description": "Contain product reference id that is to be booked. *PriceProductId* will received in **Price API** reponse.",
+                "type": "string"
+              },
+              "paymentBreakups": {
+                "description": "Contains the list of information for each payment method used to book the inventory item. For example, a total payment of $500 was made out of which $300 was paid by using a credit card and $200 was paid by redeeming points. In this scenario, there are two payment IDs, one for the credit card payment and the other for the points redeemed.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/PaymentBreakup"
+                }
+              }
+            }
+          }
+        ],
+        "properties": {}
+      },
+      "ActivityBookProduct": {
+        "description": "Contains specific information about the activity product that is to be booked.",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/definitions/BookProduct"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "activityBookingAnswers": {
+                "description": "Contains list of answers passed for activity related questions.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/ActivityBookingAnswer"
+                }
+              },
+              "type": {
+                "description": "Product Type",
+                "enum": [
+                  "Hotel",
+                  "Flight",
+                  "Activity",
+                  "Car"
+                ],
+                "type": "string"
+              },
+              "searchId": {
+                "description": "Unique search id for product from search response.",
+                "type": "string"
+              },
+              "pricedProductId": {
+                "description": "Contain product reference id that is to be booked. *PriceProductId* will received in **Price API** reponse.",
+                "type": "string"
+              },
+              "paymentBreakups": {
+                "description": "Contains the list of information for each payment method used to book the inventory item. For example, a total payment of $500 was made out of which $300 was paid by using a credit card and $200 was paid by redeeming points. In this scenario, there are two payment IDs, one for the credit card payment and the other for the points redeemed.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/PaymentBreakup"
+                }
+              }
+            }
+          }
+        ],
+        "properties": {}
+      },
+      "ActivityBookingAnswer": {
+        "description": "Contains information about the answer of activity related question.",
+        "type": "object",
+        "properties": {
+          "questionId": {
+            "format": "int32",
+            "description": "Contains question id. The question id is provided in the activity options api response as well as price api response.",
+            "type": "integer"
+          },
+          "answer": {
+            "description": "Contains answer text.",
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
